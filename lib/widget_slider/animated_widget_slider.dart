@@ -5,7 +5,9 @@ import 'package:flutter_animated_widget_slide/main.dart';
 
 class AnimatedWidgetSlider extends StatefulWidget {
   final double width;
-  AnimatedWidgetSlider({Key? key, required this.width}) : super(key: key);
+  final Widget? initial;
+  AnimatedWidgetSlider({Key? key, required this.width, this.initial})
+      : super(key: key);
   _AnimatedWidgetSliderState _bi = _AnimatedWidgetSliderState();
 
   @override
@@ -37,8 +39,8 @@ class _AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
   @override
   void initState() {
     super.initState();
-    _wid1 = MyHomePage(title: '111111111111111111111');
-    _wid2 = MyHomePage(title: '222222222222222222222');
+    _wid1 = widget.initial;
+    //_wid2 = MyHomePage(title: '222222222222222222222');
     controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 500),
@@ -154,9 +156,9 @@ class _AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
   void fromLeft(Widget widget) {
     setState(() {
       _turnNormal = false;
-      if (_wid1 == _actual) _wid2 = _wid1;
-      _wid1 = widget;
-      _actual = _wid1;
+      if (_wid2 == _actual) _wid2 = _wid1;
+      _wid2 = widget;
+      _actual = _wid2;
       controller.reset();
       controller.forward();
     });

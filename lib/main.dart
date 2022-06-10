@@ -7,7 +7,10 @@ void main() {
       home: Scaffold(
         body: Container(
           color: Colors.red,
-          child: AnimatedWidgetSlider(width: 250),
+          child: AnimatedWidgetSlider(
+            width: 250,
+            initial: MyHomePage(title: 'initial'),
+          ),
         ),
       )));
 }
