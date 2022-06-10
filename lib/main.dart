@@ -102,10 +102,11 @@ class _BibiState extends State<Bibi> {
         children: [
           _w,
           ElevatedButton(
-              onPressed: () => _w.left(MyHomePage(title: 'From left')),
+              onPressed: () => _w.fromLeft(MyHomePage(title: 'From fromLeft')),
               child: Text("Left")),
           ElevatedButton(
-              onPressed: () => _w.right(MyHomePage(title: 'From right')),
+              onPressed: () =>
+                  _w.fromRight(MyHomePage(title: 'From fromRight')),
               child: Text("Right")),
         ],
       ),

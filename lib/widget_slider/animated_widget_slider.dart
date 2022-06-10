@@ -11,12 +11,12 @@ class AnimatedWidgetSlider extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _bi;
 
-  void right(Widget widget) {
-    _bi.right(widget);
+  void fromRight(Widget widget) {
+    _bi.fromRight(widget);
   }
 
-  void left(Widget widget) {
-    _bi.right(widget);
+  void fromLeft(Widget widget) {
+    _bi.fromRight(widget);
   }
 }
 
@@ -41,7 +41,7 @@ class _AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
     _wid2 = MyHomePage(title: '222222222222222222222');
     controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 3),
+      duration: const Duration(milliseconds: 500),
     );
     anim1 = Tween<double>(begin: 0, end: math.pi / 2).animate(
       CurvedAnimation(
@@ -72,79 +72,93 @@ class _AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      key: _widgetKey,
-      alignment: Alignment.center,
-      children: [
-        AnimatedBuilder(
-          animation: controller,
-          builder: (BuildContext _, child) {
-            // Offset _offset = Offset(0, anim1.value);
-            return Transform(
-              alignment: Alignment.center,
-              transform: _turnNormal
-                  ? (Matrix4.identity()
-                    ..setEntry(3, 2, 0.001)
-                    ..rotateY(anim1.value)
-                    ..scale(anim3.value)
-                    ..scale(anim4.value)
-                    ..translate(-anim2.value, 0, -anim2.value))
-                  : (Matrix4.identity()
-                    ..setEntry(3, 2, 0.001)
-                    ..scale(anim3.value)
-                    ..scale(anim4.value)
-                    ..rotateY(math.pi / 2 - anim1.value)
-                    ..translate(
-                      anim2.value - widget.width,
-                      0,
-                      anim2.value - widget.width,
-                    )),
-              child: child,
-            );
-          },
-          child: _wid1,
-        ),
-        AnimatedBuilder(
-          animation: controller,
-          builder: (BuildContext _, child) {
-            return Transform(
-              alignment: Alignment.center,
-              transform: _turnNormal
-                  ? (Matrix4.identity()
-                    ..setEntry(3, 2, 0.001)
-                    ..scale(anim3.value)
-                    ..scale(anim4.value)
-                    ..rotateY(anim1.value - math.pi / 2)
-                    ..translate(widget.width - anim2.value, 0,
-                        -widget.width + anim2.value))
-                  : (Matrix4.identity()
-                    ..setEntry(3, 2, 0.001)
-                    ..rotateY(-anim1.value)
-                    ..scale(anim3.value)
-                    ..scale(anim4.value)
-                    ..translate(anim2.value, 0, -anim2.value)),
-              child: child,
-            );
-          },
-          child: _wid2,
-        ),
-      ],
+    return GestureDetector(
+      onPanUpdate: (details) {
+        if (details.delta.dx > 0)
+          fromLeft(MyHomePage(title: "Dragging to fromLeft "));
+        else
+          fromRight(MyHomePage(title: "Dragging to fromRight"));
+      },
+      child: Stack(
+        key: _widgetKey,
+        alignment: Alignment.center,
+        children: [
+          AnimatedBuilder(
+            animation: controller,
+            builder: (BuildContext _, child) {
+              // Offset _offset = Offset(0, anim1.value);
+              return Transform(
+                alignment: Alignment.center,
+                transform: _turnNormal
+                    ? (Matrix4.identity()
+                      ..setEntry(3, 2, 0.001)
+                      ..rotateY(anim1.value)
+                      ..scale(anim3.value)
+                      ..scale(anim4.value)
+                      ..translate(-anim2.value, 0, -anim2.value))
+                    : (Matrix4.identity()
+                      ..setEntry(3, 2, 0.001)
+                      ..rotateY(-anim1.value)
+                      ..scale(anim3.value)
+                      ..scale(anim4.value)
+                      ..translate(anim2.value, 0, -anim2.value)),
+                child: child,
+              );
+            },
+            child: _wid1,
+          ),
+          AnimatedBuilder(
+            animation: controller,
+            builder: (BuildContext _, child) {
+              return Transform(
+                alignment: Alignment.center,
+                transform: _turnNormal
+                    ? (Matrix4.identity()
+                      ..setEntry(3, 2, 0.001)
+                      ..scale(anim3.value)
+                      ..scale(anim4.value)
+                      ..rotateY(anim1.value - math.pi / 2)
+                      ..translate(widget.width - anim2.value, 0,
+                          -widget.width + anim2.value))
+                    : (Matrix4.identity()
+                      ..setEntry(3, 2, 0.001)
+                      ..scale(anim3.value)
+                      ..scale(anim4.value)
+                      ..rotateY(math.pi / 2 - anim1.value)
+                      ..translate(
+                        anim2.value - widget.width,
+                        0,
+                        anim2.value - widget.width,
+                      )),
+                child: child,
+              );
+            },
+            child: _wid2,
+          ),
+        ],
+      ),
     );
   }
 
-  void right(Widget widget) {
-    _turnNormal = true;
-    if (_wid2 == _actual) _wid1 = _wid2;
-    _actual = _wid2 = widget;
-    controller.reset();
-    controller.forward();
+  void fromRight(Widget widget) {
+    setState(() {
+      _turnNormal = true;
+      if (_wid2 == _actual) _wid1 = _wid2;
+      _wid2 = widget;
+      _actual = _wid2;
+      controller.reset();
+      controller.forward();
+    });
   }
 
-  void left(Widget widget) {
-    _turnNormal = false;
-    if (_wid1 == _actual) _wid2 = _wid1;
-    _actual = _wid1 = widget;
-    controller.reset();
-    controller.forward();
+  void fromLeft(Widget widget) {
+    setState(() {
+      _turnNormal = false;
+      if (_wid1 == _actual) _wid2 = _wid1;
+      _wid1 = widget;
+      _actual = _wid1;
+      controller.reset();
+      controller.forward();
+    });
   }
 }
