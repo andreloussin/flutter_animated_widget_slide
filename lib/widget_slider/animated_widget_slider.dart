@@ -5,8 +5,10 @@ import 'package:flutter_animated_widget_slide/main.dart';
 
 class AnimatedWidgetSlider extends StatefulWidget {
   final double width;
-  final Widget? initial;
-  AnimatedWidgetSlider({Key? key, required this.width, this.initial})
+  late final Widget? initial;
+  late final List<Widget>? contents;
+  AnimatedWidgetSlider(
+      {Key? key, required this.width, this.initial, this.contents})
       : super(key: key);
   _AnimatedWidgetSliderState _bi = _AnimatedWidgetSliderState();
 
@@ -14,11 +16,11 @@ class AnimatedWidgetSlider extends StatefulWidget {
   State<StatefulWidget> createState() => _bi;
 
   void fromRight(Widget widget) {
-    _bi.fromRight(widget);
+    _bi.fromRight(widget: widget);
   }
 
   void fromLeft(Widget widget) {
-    _bi.fromRight(widget);
+    _bi.fromRight(widget: widget);
   }
 }
 
@@ -35,6 +37,7 @@ class _AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
   Widget? _actual;
   Widget? _wid1;
   Widget? _wid2;
+  int index = 0;
 
   @override
   void initState() {
@@ -77,9 +80,9 @@ class _AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
     return GestureDetector(
       onPanUpdate: (details) {
         if (details.delta.dx > 0)
-          fromLeft(MyHomePage(title: "Dragging to fromLeft "));
+          fromLeft(widget: MyHomePage(title: "LEFT"));
         else
-          fromRight(MyHomePage(title: "Dragging to fromRight"));
+          fromRight(widget: MyHomePage(title: "RIGHT"));
       },
       child: Stack(
         key: _widgetKey,
@@ -142,7 +145,8 @@ class _AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
     );
   }
 
-  void fromRight(Widget widget) {
+  void fromRight({Widget? widget}) {
+    widget ??= Container();
     setState(() {
       _turnNormal = true;
       if (_wid2 == _actual) _wid1 = _wid2;
@@ -153,7 +157,8 @@ class _AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
     });
   }
 
-  void fromLeft(Widget widget) {
+  void fromLeft({Widget? widget}) {
+    widget ??= Container();
     setState(() {
       _turnNormal = false;
       if (_wid2 == _actual) _wid2 = _wid1;

@@ -6,7 +6,7 @@ void main() {
       title: "ece",
       home: Scaffold(
         body: Container(
-          color: Colors.red,
+          color: Colors.black,
           child: AnimatedWidgetSlider(
             width: 250,
             initial: MyHomePage(title: 'initial'),
