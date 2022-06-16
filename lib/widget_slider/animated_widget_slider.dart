@@ -1,32 +1,40 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
-
+import 'dart:io';
 import 'package:flutter_animated_widget_slide/main.dart';
 
+typedef AnimatedWidgetSliderBuilder = Widget? Function(Widget data, int index);
+
 class AnimatedWidgetSlider extends StatefulWidget {
-  final double width;
-  late final Widget? initial;
-  late List<Widget>? contents = [
-    const MyHomePage(title: "1"),
-    const MyHomePage(title: "2"),
-    const MyHomePage(title: "3"),
-    const MyHomePage(title: "4"),
-    const MyHomePage(title: "5"),
-  ];
-  AnimatedWidgetSlider({Key? key, required this.width, this.initial, contents})
+  AnimatedWidgetSliderController? controller;
+  late AnimatedWidgetSliderState _bi;
+  late List<Widget>? contents;
+  AnimatedWidgetSlider({Key? key, this.contents, this.controller})
       : super(key: key) {
-    this.contents = contents != null
-        ? contents
-        : [
-            const MyHomePage(title: "1"),
-            const MyHomePage(title: "2"),
-            const MyHomePage(title: "3"),
-            const MyHomePage(title: "4"),
-            const MyHomePage(title: "5"),
-          ];
-    ;
+    _bi = AnimatedWidgetSliderState(controller: controller);
   }
-  _AnimatedWidgetSliderState _bi = _AnimatedWidgetSliderState();
+
+  static AnimatedWidgetSlider builder(
+      {Key? key,
+      required List<Widget> items,
+      AnimatedWidgetSliderBuilder? builder,
+      AnimatedWidgetSliderController? controller}) {
+    builder = builder ?? (widget, index) => widget;
+    List<Widget> li = [];
+    if (items.isNotEmpty) {
+      for (Widget item in items) {
+        Widget? w = builder(item, items.indexOf(item));
+        if (w != null) {
+          li.add(Slide(widget: w));
+        }
+      }
+    }
+    return AnimatedWidgetSlider(
+      key: key,
+      contents: li,
+      controller: controller,
+    );
+  }
 
   @override
   State<StatefulWidget> createState() => _bi;
@@ -40,198 +48,325 @@ class AnimatedWidgetSlider extends StatefulWidget {
   }
 }
 
-class _AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
+class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
     with TickerProviderStateMixin {
-  late AnimationController controller;
+  AnimatedWidgetSliderController? controller;
+  late AnimationController animController;
   late Animation rotateAnim;
   late Animation translateAnim;
   late Animation firstScaleAnim;
   late Animation lastScaleAnim;
   final GlobalKey widgetKey = GlobalKey();
-  late RenderBox? renderBox;
   bool _turnNormal = true;
+  bool _autoNexting = false;
+  int _waitSeconde = 2;
+  int _tempWaitSeconde = 0;
   Widget? _actual;
-  Widget? _wid1;
-  Widget? _wid2;
+  Widget? _hidden;
+  Widget? _visible;
   int index = 0;
+  double minScale = 0.7;
+  double width = 0;
+
+  AnimatedWidgetSliderState({this.controller}) {
+    this.controller!.setParent(this);
+  }
 
   @override
   void initState() {
     super.initState();
-    _wid1 = widget.initial;
-    //_wid2 = MyHomePage(title: '222222222222222222222');
-    controller = AnimationController(
+    animController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 1),
     );
+
+    // Init Animations
     rotateAnim = Tween<double>(begin: 0, end: math.pi / 2).animate(
       CurvedAnimation(
-        parent: controller,
+        parent: animController,
         curve: const Interval(0.0, 1.0),
       ),
     );
-    translateAnim = Tween<double>(begin: 0, end: widget.width).animate(
+    translateAnim = Tween<double>(begin: 0, end: width).animate(
       CurvedAnimation(
-        parent: controller,
+        parent: animController,
         curve: const Interval(0.0, 1.0),
       ),
     );
-    firstScaleAnim = Tween<double>(begin: 1, end: 0.9).animate(
+    firstScaleAnim = Tween<double>(begin: 1, end: minScale).animate(
       CurvedAnimation(
-        parent: controller,
+        parent: animController,
         curve: const Interval(0.0, 0.5),
       ),
     );
-    lastScaleAnim = Tween<double>(begin: 0.9, end: 1).animate(
+    lastScaleAnim = Tween<double>(begin: minScale, end: 1).animate(
       CurvedAnimation(
-        parent: controller,
+        parent: animController,
         curve: const Interval(0.5, 1.0),
       ),
     );
-    //controller.repeat();
+
+    // Set showing widget
+    _hidden =
+        this.widget.contents!.elementAt(index % this.widget.contents!.length);
+    _actual = _hidden;
+
+    WidgetsBinding.instance.addPostFrameCallback((data) {
+      widthChanged();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onHorizontalDragEnd: (details) {
-        if (details.velocity.pixelsPerSecond.dx > 0)
+        _autoNexting = false;
+        if (details.velocity.pixelsPerSecond.dx > 0) {
           fromLeft();
-        else
+        } else {
           fromRight();
+        }
       },
       child: Stack(
         key: widgetKey,
         alignment: Alignment.center,
         children: [
           AnimatedBuilder(
-            animation: controller,
+            animation: animController,
             builder: (BuildContext _, child) {
-              // Offset _offset = Offset(0, rotateAnim.value);
               return Transform(
                 alignment: Alignment.center,
                 transform: _turnNormal
                     ? (Matrix4.identity()
                       ..setEntry(3, 2, 0.001)
                       ..rotateY(rotateAnim.value)
-                      // ..scale(rotateAnim.value < math.pi / 4
-                      //     ? firstScaleAnim.value
-                      //     : lastScaleAnim.value)
-                      ..translate(
-                          -(widget.width * (1 - math.cos(rotateAnim.value))),
-                          0,
-                          -(widget.width * math.sin(rotateAnim.value))))
-                    // ..translate(
-                    //     -translateAnim.value, 0, -translateAnim.value))
+                      ..scale(scale_value())
+                      ..translate(-(width * (1 - math.cos(rotateAnim.value))),
+                          0, -(width * math.sin(rotateAnim.value))))
                     : (Matrix4.identity()
                       ..setEntry(3, 2, 0.001)
                       ..rotateY(-rotateAnim.value)
-                      ..scale(rotateAnim.value < math.pi / 4
-                          ? firstScaleAnim.value
-                          : lastScaleAnim.value)
-                      ..translate(
-                          -(widget.width * (1 - math.cos(rotateAnim.value))),
-                          0,
-                          -(widget.width * math.sin(rotateAnim.value)))),
-                // ..translate(
-                //     translateAnim.value, 0, -translateAnim.value)),
+                      ..scale(scale_value())
+                      ..translate((width * (1 - math.cos(rotateAnim.value))), 0,
+                          -(width * math.sin(rotateAnim.value)))),
                 child: child,
               );
             },
-            child: _wid1,
+            child: rotateAnim.value < math.pi / 4
+                ? _turnNormal
+                    ? _hidden
+                    : _visible
+                : _turnNormal
+                    ? _visible
+                    : _hidden,
           ),
           AnimatedBuilder(
-            animation: controller,
+            animation: animController,
             builder: (BuildContext _, child) {
               return Transform(
                 alignment: Alignment.center,
                 transform: _turnNormal
                     ? (Matrix4.identity()
                       ..setEntry(3, 2, 0.001)
-                      ..scale(rotateAnim.value < math.pi / 4
-                          ? firstScaleAnim.value
-                          : lastScaleAnim.value)
                       ..rotateY(rotateAnim.value - math.pi / 2)
+                      ..scale(scale_value())
                       ..translate(
-                          widget.width -
-                              (widget.width * (math.sin(rotateAnim.value))),
+                          width - (width * (math.sin(rotateAnim.value))),
                           0,
-                          -widget.width +
-                              (widget.width *
-                                  (1 - math.cos(rotateAnim.value)))))
-                    // ..translate(widget.width - translateAnim.value, 0,
-                    //     -widget.width + translateAnim.value))
+                          -width + (width * (1 - math.cos(rotateAnim.value)))))
                     : (Matrix4.identity()
                       ..setEntry(3, 2, 0.001)
-                      ..scale(rotateAnim.value < math.pi / 4
-                          ? firstScaleAnim.value
-                          : lastScaleAnim.value)
+                      ..setEntry(3, 2, 0.001)
                       ..rotateY(math.pi / 2 - rotateAnim.value)
+                      ..scale(scale_value())
                       ..translate(
-                          widget.width -
-                              (widget.width * (math.sin(rotateAnim.value))),
-                          0,
-                          -widget.width +
-                              (widget.width *
-                                  (1 - math.cos(rotateAnim.value))))),
-                // ..translate(
-                //   translateAnim.value - widget.width,
-                //   0,
-                //   translateAnim.value - widget.width,
-                // )),
+                        (-width + (width * (math.sin(rotateAnim.value)))),
+                        0,
+                        -width + (width * (1 - math.cos(rotateAnim.value))),
+                      )),
                 child: child,
               );
             },
-            child: _wid2,
+            child: rotateAnim.value < math.pi / 4
+                ? _turnNormal
+                    ? _visible
+                    : _hidden
+                : _turnNormal
+                    ? _hidden
+                    : _visible,
           ),
         ],
       ),
     );
   }
 
+  void widthChanged() {
+    // Get widget width after render
+    width =
+        (widgetKey.currentContext?.findRenderObject() as RenderBox).size.width /
+            2;
+
+    // Reinit Animations
+    rotateAnim = Tween<double>(begin: 0, end: math.pi / 2).animate(
+      CurvedAnimation(
+        parent: animController,
+        curve: const Interval(0.0, 1.0),
+      ),
+    );
+    translateAnim = Tween<double>(begin: 0, end: width).animate(
+      CurvedAnimation(
+        parent: animController,
+        curve: const Interval(0.0, 1.0),
+      ),
+    );
+    firstScaleAnim = Tween<double>(begin: 1, end: minScale).animate(
+      CurvedAnimation(
+        parent: animController,
+        curve: const Interval(0.0, 0.5),
+      ),
+    );
+    lastScaleAnim = Tween<double>(begin: minScale, end: 1).animate(
+      CurvedAnimation(
+        parent: animController,
+        curve: const Interval(0.5, 1.0),
+      ),
+    );
+    setState(() {});
+  }
+
+  void set tempWaitSeconde(int second) {
+    _tempWaitSeconde = second;
+  }
+
+  void setTempWaitSecond(int second) {
+    _tempWaitSeconde = second;
+  }
+
+  Future<void> startAutoNexting() async {
+    _autoNexting = true;
+    int step = 0;
+    while (_autoNexting) {
+      await Future.delayed(const Duration(milliseconds: 100));
+      if (step >=
+          10 * (_tempWaitSeconde > 0 ? _tempWaitSeconde : _waitSeconde)) {
+        _tempWaitSeconde = 0;
+        step = 0;
+        fromRight();
+      }
+      step++;
+    }
+  }
+
+  void stopAutoNexting() {
+    _autoNexting = false;
+  }
+
+  double scale_value() {
+    return rotateAnim.value < math.pi / 4
+        ? firstScaleAnim.value
+        : lastScaleAnim.value;
+  }
+
+  double rotate_degree() {
+    return rotateAnim.value < math.pi / 4
+        ? firstScaleAnim.value
+        : lastScaleAnim.value;
+  }
+
   void fromRight({Widget? widget}) {
+    print("fromRight");
+    setState(() {
+      animController.reset();
+    });
     setState(() {
       if (widget == null) {
+        index++;
+        print(index);
         try {
           widget = this
               .widget
               .contents!
               .elementAt(index % this.widget.contents!.length);
-          index++;
         } catch (e) {
           widget = Container();
         }
       }
+      if (_actual != _hidden) {
+        _hidden = _visible;
+      }
+      _visible = widget;
       _turnNormal = true;
-      print(_turnNormal);
-      print(index);
-      if (_wid2 == _actual) _wid1 = _wid2;
-      _wid2 = widget;
-      _actual = _wid2;
-      controller.reset();
-      controller.forward();
+      _actual = _visible;
+      animController.forward();
     });
   }
 
   void fromLeft({Widget? widget}) {
+    print("fromLeft");
+    setState(() {
+      animController.reset();
+    });
     setState(() {
       if (widget == null) {
+        index--;
+        print(index);
         try {
           widget = this
               .widget
               .contents!
               .elementAt(index % this.widget.contents!.length);
-          index--;
         } catch (e) {
           widget = Container();
         }
       }
+      if (_actual != _visible) {
+        _visible = _hidden;
+      }
+      _hidden = widget;
       _turnNormal = false;
-      if (_wid2 == _actual) _wid2 = _wid1;
-      _wid2 = widget;
-      _actual = _wid2;
-      controller.reset();
-      controller.forward();
+      _actual = _hidden;
+      animController.forward();
     });
+  }
+}
+
+class AnimatedWidgetSliderController {
+  AnimatedWidgetSliderState? parent;
+
+  void setParent(AnimatedWidgetSliderState parent) {
+    this.parent = parent;
+  }
+
+  void next() {
+    parent!.fromRight();
+  }
+
+  void prev() {
+    parent!.fromLeft();
+  }
+
+  void startAutoNexting() {
+    parent!.startAutoNexting();
+  }
+
+  void stopAutoNexting() {
+    parent!.stopAutoNexting();
+  }
+
+  bool isAutonexting() {
+    return parent!._autoNexting;
+  }
+}
+
+class Slide extends StatelessWidget {
+  final Widget? widget;
+
+  const Slide({super.key, this.widget});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: widget,
+    );
   }
 }

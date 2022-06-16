@@ -1,27 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animated_widget_slide/widget_slider/animated_widget_slider_.dart';
+import 'package:flutter_animated_widget_slide/test.dart';
+import 'package:flutter_animated_widget_slide/widget_slider/animated_widget_slider.dart';
 
 void main() {
-  runApp(MaterialApp(
-      title: "ece",
-      home: Scaffold(
-        body: Container(
-            color: Colors.black,
-            // // child: AnimatedWidgetSlider(contents: [
-            //   MyHomePage(title: 'initial'),
-            //   MyHomePage(title: 'Beta'),
-            //   MyHomePage(title: 'gamma'),
-            //   MyHomePage(title: 'lambda'),
-            // ]),
-            child: AnimatedWidgetSlider.builder(
-              items: [
-                const MyHomePage(title: 'a'),
-                const MyHomePage(title: 'b'),
-                const MyHomePage(title: 'c'),
-                const MyHomePage(title: 'd'),
-              ],
-            )),
-      )));
+  runApp(
+    MaterialApp(title: "ece", home: Test()
+        // Scaffold(
+        //   body: Container(
+        //       color: Colors.black,
+        //       // // child: AnimatedWidgetSlider(contents: [
+        //       //   MyHomePage(title: 'initial'),
+        //       //   MyHomePage(title: 'Beta'),
+        //       //   MyHomePage(title: 'gamma'),
+        //       //   MyHomePage(title: 'lambda'),
+        //       // ]),
+        // child: AnimatedWidgetSlider.builder(
+        //   items: [
+        //     const MyHomePage(title: 'a'),
+        //     const MyHomePage(title: 'b'),
+        //     const MyHomePage(title: 'c'),
+        //     const MyHomePage(title: 'd'),
+        //   ],
+        // )),
+        // ),
+        ),
+  );
 }
 
 class MyApp extends StatelessWidget {
