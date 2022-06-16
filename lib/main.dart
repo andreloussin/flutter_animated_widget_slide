@@ -1,17 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animated_widget_slide/widget_slider/animated_widget_slider.dart';
+import 'package:flutter_animated_widget_slide/widget_slider/animated_widget_slider_.dart';
 
 void main() {
   runApp(MaterialApp(
       title: "ece",
       home: Scaffold(
         body: Container(
-          color: Colors.black,
-          child: AnimatedWidgetSlider(
-            width: 250,
-            initial: MyHomePage(title: 'initial'),
-          ),
-        ),
+            color: Colors.black,
+            // // child: AnimatedWidgetSlider(contents: [
+            //   MyHomePage(title: 'initial'),
+            //   MyHomePage(title: 'Beta'),
+            //   MyHomePage(title: 'gamma'),
+            //   MyHomePage(title: 'lambda'),
+            // ]),
+            child: AnimatedWidgetSlider.builder(
+              items: [
+                const MyHomePage(title: 'a'),
+                const MyHomePage(title: 'b'),
+                const MyHomePage(title: 'c'),
+                const MyHomePage(title: 'd'),
+              ],
+            )),
       )));
 }
 
@@ -95,7 +104,7 @@ class Bibi extends StatefulWidget {
 }
 
 class _BibiState extends State<Bibi> {
-  final AnimatedWidgetSlider _w = AnimatedWidgetSlider(width: 250);
+  final AnimatedWidgetSlider _w = AnimatedWidgetSlider();
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -105,12 +114,13 @@ class _BibiState extends State<Bibi> {
         children: [
           _w,
           ElevatedButton(
-              onPressed: () => _w.fromLeft(MyHomePage(title: 'From fromLeft')),
-              child: Text("Left")),
+              onPressed: () =>
+                  _w.fromLeft(const MyHomePage(title: 'From fromLeft')),
+              child: const Text("Left")),
           ElevatedButton(
               onPressed: () =>
-                  _w.fromRight(MyHomePage(title: 'From fromRight')),
-              child: Text("Right")),
+                  _w.fromRight(const MyHomePage(title: 'From fromRight')),
+              child: const Text("Right")),
         ],
       ),
     );

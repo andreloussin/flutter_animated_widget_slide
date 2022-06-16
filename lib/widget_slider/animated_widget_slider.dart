@@ -118,10 +118,9 @@ class _AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
                       //     ? firstScaleAnim.value
                       //     : lastScaleAnim.value)
                       ..translate(
-                          -(widget.width * math.sin(rotateAnim.value)) / 2,
+                          -(widget.width * (1 - math.cos(rotateAnim.value))),
                           0,
-                          -(widget.width * (1 - math.cos(rotateAnim.value))) /
-                              2))
+                          -(widget.width * math.sin(rotateAnim.value))))
                     // ..translate(
                     //     -translateAnim.value, 0, -translateAnim.value))
                     : (Matrix4.identity()
@@ -131,7 +130,11 @@ class _AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
                           ? firstScaleAnim.value
                           : lastScaleAnim.value)
                       ..translate(
-                          translateAnim.value, 0, -translateAnim.value)),
+                          -(widget.width * (1 - math.cos(rotateAnim.value))),
+                          0,
+                          -(widget.width * math.sin(rotateAnim.value)))),
+                // ..translate(
+                //     translateAnim.value, 0, -translateAnim.value)),
                 child: child,
               );
             },
@@ -145,12 +148,19 @@ class _AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
                 transform: _turnNormal
                     ? (Matrix4.identity()
                       ..setEntry(3, 2, 0.001)
-                      // ..scale(rotateAnim.value < math.pi / 4
-                      //     ? firstScaleAnim.value
-                      //     : lastScaleAnim.value)
+                      ..scale(rotateAnim.value < math.pi / 4
+                          ? firstScaleAnim.value
+                          : lastScaleAnim.value)
                       ..rotateY(rotateAnim.value - math.pi / 2)
-                      ..translate(widget.width - translateAnim.value, 0,
-                          -widget.width + translateAnim.value))
+                      ..translate(
+                          widget.width -
+                              (widget.width * (math.sin(rotateAnim.value))),
+                          0,
+                          -widget.width +
+                              (widget.width *
+                                  (1 - math.cos(rotateAnim.value)))))
+                    // ..translate(widget.width - translateAnim.value, 0,
+                    //     -widget.width + translateAnim.value))
                     : (Matrix4.identity()
                       ..setEntry(3, 2, 0.001)
                       ..scale(rotateAnim.value < math.pi / 4
@@ -158,10 +168,17 @@ class _AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
                           : lastScaleAnim.value)
                       ..rotateY(math.pi / 2 - rotateAnim.value)
                       ..translate(
-                        translateAnim.value - widget.width,
-                        0,
-                        translateAnim.value - widget.width,
-                      )),
+                          widget.width -
+                              (widget.width * (math.sin(rotateAnim.value))),
+                          0,
+                          -widget.width +
+                              (widget.width *
+                                  (1 - math.cos(rotateAnim.value))))),
+                // ..translate(
+                //   translateAnim.value - widget.width,
+                //   0,
+                //   translateAnim.value - widget.width,
+                // )),
                 child: child,
               );
             },
