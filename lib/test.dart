@@ -41,19 +41,21 @@ class TestState extends State<Test> {
               icon: Icon(Icons.preview)),
           BottomNavigationBarItem(
               backgroundColor: Color.fromARGB(255, 179, 179, 179),
-              label: "Next",
-              icon: Icon(Icons.next_plan)),
-          BottomNavigationBarItem(
-              backgroundColor: Color.fromARGB(255, 179, 179, 179),
               label: "Auto Scroll",
               icon: Icon(Icons.loop)),
+          BottomNavigationBarItem(
+              backgroundColor: Color.fromARGB(255, 179, 179, 179),
+              label: "Next",
+              icon: Icon(Icons.next_plan)),
           BottomNavigationBarItem(
               backgroundColor: Color.fromARGB(255, 179, 179, 179),
               label: "More",
               icon: Icon(Icons.more)),
         ],
         onTap: (index) {
-          indexed = index;
+          setState(() {
+            indexed = index;
+          });
           switch (index) {
             case 0:
               controller.prev();
