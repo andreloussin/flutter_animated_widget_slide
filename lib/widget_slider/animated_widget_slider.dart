@@ -59,14 +59,13 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
   final GlobalKey widgetKey = GlobalKey();
   bool _turnNormal = true;
   bool _autoNexting = false;
-  bool _mixtag = false;
   int _waitSeconde = 2;
   int _tempWaitSeconde = 0;
   Widget? _actual;
   Widget? _hidden;
   Widget? _visible;
   int index = 0;
-  double minScale = 0.7;
+  double minScale = 0.8;
   double width = 0;
 
   AnimatedWidgetSliderState({this.controller}) {
@@ -139,13 +138,13 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
                 alignment: Alignment.center,
                 transform: _turnNormal
                     ? (Matrix4.identity()
-                      ..setEntry(3, 2, 0.001)
+                      ..setEntry(3, 2, 0.0005)
                       ..rotateY(rotateAnim.value)
                       ..scale(scale_value())
                       ..translate(-(width * (1 - math.cos(rotateAnim.value))),
                           0, -(width * math.sin(rotateAnim.value))))
                     : (Matrix4.identity()
-                      ..setEntry(3, 2, 0.001)
+                      ..setEntry(3, 2, 0.0005)
                       ..rotateY(-rotateAnim.value)
                       ..scale(scale_value())
                       ..translate(
@@ -165,7 +164,7 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
                 alignment: Alignment.center,
                 transform: _turnNormal
                     ? (Matrix4.identity()
-                      ..setEntry(3, 2, 0.001)
+                      ..setEntry(3, 2, 0.0005)
                       ..rotateY(rotateAnim.value - math.pi / 2)
                       ..scale(scale_value())
                       ..translate(
@@ -173,8 +172,8 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
                           rotateAnim.value < math.pi / 12 ? 10000 : 0,
                           -width + (width * (1 - math.cos(rotateAnim.value)))))
                     : (Matrix4.identity()
-                      ..setEntry(3, 2, 0.001)
-                      ..setEntry(3, 2, 0.001)
+                      ..setEntry(3, 2, 0.0005)
+                      ..setEntry(3, 2, 0.0005)
                       ..rotateY(math.pi / 2 - rotateAnim.value)
                       ..scale(scale_value())
                       ..translate(
@@ -231,6 +230,10 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
 
   void setTempWaitSecond(int second) {
     _tempWaitSeconde = second;
+  }
+
+  void setWaitSecond(int second) {
+    _waitSeconde = second;
   }
 
   Future<void> startAutoNexting() async {
@@ -334,6 +337,14 @@ class AnimatedWidgetSliderController {
 
   void stopAutoNexting() {
     parent!.stopAutoNexting();
+  }
+
+  void setTempWaitSecond(int second) {
+    parent!.setTempWaitSecond(second);
+  }
+
+  void setWaitSecond(int second) {
+    parent!.setWaitSecond(second);
   }
 
   bool isAutonexting() {
