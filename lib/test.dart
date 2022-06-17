@@ -53,9 +53,7 @@ class TestState extends State<Test> {
               icon: Icon(Icons.more)),
         ],
         onTap: (index) {
-          setState(() {
-            indexed = index;
-          });
+          indexed = index;
           switch (index) {
             case 0:
               controller.prev();

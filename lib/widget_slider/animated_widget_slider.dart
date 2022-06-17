@@ -59,6 +59,7 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
   final GlobalKey widgetKey = GlobalKey();
   bool _turnNormal = true;
   bool _autoNexting = false;
+  bool _mixtag = false;
   int _waitSeconde = 2;
   int _tempWaitSeconde = 0;
   Widget? _actual;
@@ -69,7 +70,7 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
   double width = 0;
 
   AnimatedWidgetSliderState({this.controller}) {
-    this.controller!.setParent(this);
+    controller!.setParent(this);
   }
 
   @override
@@ -147,18 +148,15 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
                       ..setEntry(3, 2, 0.001)
                       ..rotateY(-rotateAnim.value)
                       ..scale(scale_value())
-                      ..translate((width * (1 - math.cos(rotateAnim.value))), 0,
-                          -(width * math.sin(rotateAnim.value)))),
+                      ..translate(
+                        (width * (1 - math.cos(rotateAnim.value))),
+                        0,
+                        -(width * math.sin(rotateAnim.value)),
+                      )),
                 child: child,
               );
             },
-            child: rotateAnim.value < math.pi / 4
-                ? _turnNormal
-                    ? _hidden
-                    : _visible
-                : _turnNormal
-                    ? _visible
-                    : _hidden,
+            child: _hidden,
           ),
           AnimatedBuilder(
             animation: animController,
@@ -172,7 +170,7 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
                       ..scale(scale_value())
                       ..translate(
                           width - (width * (math.sin(rotateAnim.value))),
-                          0,
+                          rotateAnim.value < math.pi / 12 ? 10000 : 0,
                           -width + (width * (1 - math.cos(rotateAnim.value)))))
                     : (Matrix4.identity()
                       ..setEntry(3, 2, 0.001)
@@ -181,19 +179,13 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
                       ..scale(scale_value())
                       ..translate(
                         (-width + (width * (math.sin(rotateAnim.value)))),
-                        0,
+                        rotateAnim.value < math.pi / 12 ? 10000 : 0,
                         -width + (width * (1 - math.cos(rotateAnim.value))),
                       )),
                 child: child,
               );
             },
-            child: rotateAnim.value < math.pi / 4
-                ? _turnNormal
-                    ? _visible
-                    : _hidden
-                : _turnNormal
-                    ? _hidden
-                    : _visible,
+            child: _visible,
           ),
         ],
       ),
@@ -231,7 +223,6 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
         curve: const Interval(0.5, 1.0),
       ),
     );
-    setState(() {});
   }
 
   void set tempWaitSeconde(int second) {
@@ -274,14 +265,10 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
   }
 
   void fromRight({Widget? widget}) {
-    print("fromRight");
     setState(() {
       animController.reset();
-    });
-    setState(() {
       if (widget == null) {
         index++;
-        print(index);
         try {
           widget = this
               .widget
@@ -302,14 +289,10 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
   }
 
   void fromLeft({Widget? widget}) {
-    print("fromLeft");
     setState(() {
       animController.reset();
-    });
-    setState(() {
       if (widget == null) {
         index--;
-        print(index);
         try {
           widget = this
               .widget
