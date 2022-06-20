@@ -4,20 +4,27 @@ import 'dart:io';
 import 'package:flutter_animated_widget_slide/main.dart';
 
 typedef AnimatedWidgetSliderBuilder = Widget? Function(Widget data, int index);
+typedef AnimatedWidgetSliderScrollListener = Widget? Function(double level);
 
 class AnimatedWidgetSlider extends StatefulWidget {
   AnimatedWidgetSliderController? controller;
+  AnimatedWidgetSliderScrollListener? scrollListener;
   late AnimatedWidgetSliderState _bi;
   late List<Widget>? contents;
-  AnimatedWidgetSlider({Key? key, this.contents, this.controller})
+  AnimatedWidgetSlider(
+      {Key? key, this.contents, this.scrollListener, this.controller})
       : super(key: key) {
-    _bi = AnimatedWidgetSliderState(controller: controller);
+    _bi = AnimatedWidgetSliderState(
+      controller: controller,
+      scrollListener: scrollListener,
+    );
   }
 
   static AnimatedWidgetSlider builder(
       {Key? key,
       required List<Widget> items,
       AnimatedWidgetSliderBuilder? builder,
+      AnimatedWidgetSliderScrollListener? scrollListener,
       AnimatedWidgetSliderController? controller}) {
     builder = builder ?? (widget, index) => widget;
     List<Widget> li = [];
@@ -30,10 +37,10 @@ class AnimatedWidgetSlider extends StatefulWidget {
       }
     }
     return AnimatedWidgetSlider(
-      key: key,
-      contents: li,
-      controller: controller,
-    );
+        key: key,
+        contents: li,
+        controller: controller,
+        scrollListener: scrollListener);
   }
 
   @override
@@ -50,6 +57,7 @@ class AnimatedWidgetSlider extends StatefulWidget {
 
 class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
     with TickerProviderStateMixin {
+  AnimatedWidgetSliderScrollListener? scrollListener;
   AnimatedWidgetSliderController? controller;
   late AnimationController animController;
   late Animation rotateAnim;
@@ -69,8 +77,9 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
   double minScale = 0.8;
   double width = 0;
 
-  AnimatedWidgetSliderState({this.controller}) {
-    controller!.setParent(this);
+  AnimatedWidgetSliderState({this.scrollListener, this.controller}) {
+    controller?.setParent(this);
+    scrollListener = scrollListener ?? (value) {};
   }
 
   @override
@@ -108,8 +117,7 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
     );
 
     // Set showing widget
-    _hidden =
-        this.widget.contents!.elementAt(index % this.widget.contents!.length);
+    _hidden = widget.contents?.elementAt(index % widget.contents!.length);
     _actual = _hidden;
 
     WidgetsBinding.instance.addPostFrameCallback((data) {
@@ -253,6 +261,8 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
         fromRight();
       }
       step += _isPlaying ? 1 : 0;
+      scrollListener!(step /
+          (10 * (_tempWaitSeconde > 0 ? _tempWaitSeconde : _waitSeconde)));
     }
   }
 

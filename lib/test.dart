@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animated_widget_slide/main.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/animated_widget_slider.dart';
+import 'package:flutter_animated_widget_slide/widget_slider/p_story.dart';
 
 class Test extends StatefulWidget {
   @override
@@ -20,18 +21,22 @@ class TestState extends State<Test> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Test widget")),
-      body: Container(
-        color: Colors.black12,
-        child: AnimatedWidgetSlider(
-          controller: controller,
-          contents: [
-            MyHomePage(title: 'a'),
-            MyHomePage(title: 'b'),
-            MyHomePage(title: 'c'),
-            MyHomePage(title: 'd'),
-          ],
-        ),
-      ),
+      body: StoryPage(),
+      // body: Container(
+      //   color: Colors.black12,
+      //   child: AnimatedWidgetSlider(
+      //     scrollListener: (value) {
+      //       print(value);
+      //     },
+      //     controller: controller,
+      //     contents: [
+      //       MyHomePage(title: 'a'),
+      //       MyHomePage(title: 'b'),
+      //       MyHomePage(title: 'c'),
+      //       MyHomePage(title: 'd'),
+      //     ],
+      //   ),
+      // ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: indexed,
         fixedColor: Colors.blue,
