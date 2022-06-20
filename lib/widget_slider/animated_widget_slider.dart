@@ -173,7 +173,6 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
                           -width + (width * (1 - math.cos(rotateAnim.value)))))
                     : (Matrix4.identity()
                       ..setEntry(3, 2, 0.0005)
-                      ..setEntry(3, 2, 0.0005)
                       ..rotateY(math.pi / 2 - rotateAnim.value)
                       ..scale(scale_value())
                       ..translate(
