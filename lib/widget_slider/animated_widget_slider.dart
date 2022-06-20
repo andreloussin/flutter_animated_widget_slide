@@ -138,13 +138,13 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
                 alignment: Alignment.center,
                 transform: _turnNormal
                     ? (Matrix4.identity()
-                      ..setEntry(3, 2, 0.0005)
+                      ..setEntry(3, 2, 0.001)
                       ..rotateY(rotateAnim.value)
                       ..scale(scale_value())
                       ..translate(-(width * (1 - math.cos(rotateAnim.value))),
                           0, -(width * math.sin(rotateAnim.value))))
                     : (Matrix4.identity()
-                      ..setEntry(3, 2, 0.0005)
+                      ..setEntry(3, 2, 0.001)
                       ..rotateY(-rotateAnim.value)
                       ..scale(scale_value())
                       ..translate(
@@ -164,7 +164,7 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
                 alignment: Alignment.center,
                 transform: _turnNormal
                     ? (Matrix4.identity()
-                      ..setEntry(3, 2, 0.0005)
+                      ..setEntry(3, 2, 0.001)
                       ..rotateY(rotateAnim.value - math.pi / 2)
                       ..scale(scale_value())
                       ..translate(
@@ -172,7 +172,7 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
                           rotateAnim.value < math.pi / 12 ? 10000 : 0,
                           -width + (width * (1 - math.cos(rotateAnim.value)))))
                     : (Matrix4.identity()
-                      ..setEntry(3, 2, 0.0005)
+                      ..setEntry(3, 2, 0.001)
                       ..rotateY(math.pi / 2 - rotateAnim.value)
                       ..scale(scale_value())
                       ..translate(
