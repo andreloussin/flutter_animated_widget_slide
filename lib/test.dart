@@ -13,6 +13,7 @@ class Test extends StatefulWidget {
 class TestState extends State<Test> {
   AnimatedWidgetSliderController controller = AnimatedWidgetSliderController();
   int indexed = 0;
+  bool _isPlaying = true;
 
   TestState();
   @override
@@ -34,7 +35,7 @@ class TestState extends State<Test> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: indexed,
         fixedColor: Colors.blue,
-        items: const <BottomNavigationBarItem>[
+        items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
               backgroundColor: Color.fromARGB(255, 179, 179, 179),
               label: "Preview",
@@ -49,8 +50,8 @@ class TestState extends State<Test> {
               icon: Icon(Icons.next_plan)),
           BottomNavigationBarItem(
               backgroundColor: Color.fromARGB(255, 179, 179, 179),
-              label: "More",
-              icon: Icon(Icons.more)),
+              label: _isPlaying ? "Pause" : "PLay",
+              icon: Icon(_isPlaying ? Icons.pause : Icons.play_arrow_outlined)),
         ],
         onTap: (index) {
           indexed = index;
@@ -67,58 +68,61 @@ class TestState extends State<Test> {
               controller.next();
               break;
             case 3:
-              showGeneralDialog(
-                  context: context,
-                  barrierDismissible: true,
-                  barrierLabel: MaterialLocalizations.of(context)
-                      .modalBarrierDismissLabel,
-                  barrierColor: Colors.black45,
-                  transitionDuration: const Duration(milliseconds: 200),
-                  pageBuilder: (context, anim1, anim2) {
-                    return Center(
-                      child: Container(
-                        width: MediaQuery.of(context).size.width - 10,
-                        height: MediaQuery.of(context).size.height - 80,
-                        padding: EdgeInsets.all(20),
-                        color: Colors.white,
-                        child: Column(
-                          children: [
-                            Text("Set number of second of the "),
-                            // TextFormField(
-                            //   keyboardType: TextInputType.number,
-                            // ),
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Text(
-                                "global annimation",
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Text(
-                                "next animation",
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Text(
-                                "Cancel",
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  });
+              _isPlaying ? controller.pause() : controller.play();
+              _isPlaying = !_isPlaying;
+
+              // showGeneralDialog(
+              //     context: context,
+              //     barrierDismissible: true,
+              //     barrierLabel: MaterialLocalizations.of(context)
+              //         .modalBarrierDismissLabel,
+              //     barrierColor: Colors.black45,
+              //     transitionDuration: const Duration(milliseconds: 200),
+              //     pageBuilder: (context, anim1, anim2) {
+              //       return Center(
+              //         child: Container(
+              //           width: MediaQuery.of(context).size.width - 10,
+              //           height: MediaQuery.of(context).size.height - 80,
+              //           padding: EdgeInsets.all(20),
+              //           color: Colors.white,
+              //           child: Column(
+              //             children: [
+              //               Text("Set number of second of the "),
+              //               // TextFormField(
+              //               //   keyboardType: TextInputType.number,
+              //               // ),
+              //               ElevatedButton(
+              //                 onPressed: () {
+              //                   Navigator.of(context).pop();
+              //                 },
+              //                 child: Text(
+              //                   "global annimation",
+              //                   style: TextStyle(color: Colors.white),
+              //                 ),
+              //               ),
+              //               ElevatedButton(
+              //                 onPressed: () {
+              //                   Navigator.of(context).pop();
+              //                 },
+              //                 child: Text(
+              //                   "next animation",
+              //                   style: TextStyle(color: Colors.white),
+              //                 ),
+              //               ),
+              //               ElevatedButton(
+              //                 onPressed: () {
+              //                   Navigator.of(context).pop();
+              //                 },
+              //                 child: Text(
+              //                   "Cancel",
+              //                   style: TextStyle(color: Colors.white),
+              //                 ),
+              //               ),
+              //             ],
+              //           ),
+              //         ),
+              //       );
+              //     });
               break;
             default:
           }

@@ -57,6 +57,7 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
   late Animation firstScaleAnim;
   late Animation lastScaleAnim;
   final GlobalKey widgetKey = GlobalKey();
+  bool _isPlaying = true;
   bool _turnNormal = true;
   bool _autoNexting = false;
   int _waitSeconde = 2;
@@ -236,6 +237,11 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
   }
 
   Future<void> startAutoNexting() async {
+    while (_autoNexting) {
+      _autoNexting = false;
+      await Future.delayed(const Duration(milliseconds: 200));
+    }
+    play();
     _autoNexting = true;
     int step = 0;
     while (_autoNexting) {
@@ -246,12 +252,20 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
         step = 0;
         fromRight();
       }
-      step++;
+      step += _isPlaying ? 1 : 0;
     }
   }
 
   void stopAutoNexting() {
     _autoNexting = false;
+  }
+
+  void pause() {
+    _isPlaying = false;
+  }
+
+  void play() {
+    _isPlaying = true;
   }
 
   double scale_value() {
@@ -346,7 +360,16 @@ class AnimatedWidgetSliderController {
     parent!.setWaitSecond(second);
   }
 
+  void pause() {
+    parent!.pause();
+  }
+
+  void play() {
+    parent!.play();
+  }
+
   bool isAutonexting() {
+    // return AnimatedWidgetSliderState._autoNexting;
     return parent!._autoNexting;
   }
 }
