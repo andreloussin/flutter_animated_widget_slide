@@ -5,7 +5,20 @@ import 'package:flutter_animated_widget_slide/widget_slider/p_story.dart';
 
 void main() {
   runApp(
-    MaterialApp(title: "ece", home: StoryPage()
+    MaterialApp(
+        title: "ece",
+        home: StoryPage(
+          contents: const [
+            Text("AAAAA"),
+            MyHomePage(title: 'a'),
+            MyHomePage(title: 'b'),
+            Text("BBBBB"),
+            Text("CCCCC"),
+            Text("DDDDD"),
+            MyHomePage(title: 'c'),
+            MyHomePage(title: 'd'),
+          ],
+        )
         // Scaffold(
         //   body: Container(
         //       color: Colors.black,

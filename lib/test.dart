@@ -21,7 +21,18 @@ class TestState extends State<Test> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Test widget")),
-      body: StoryPage(),
+      body: StoryPage(
+        contents: const [
+          Text("AAAAA"),
+          Text("BBBBB"),
+          Text("CCCCC"),
+          Text("DDDDD"),
+          MyHomePage(title: 'a'),
+          MyHomePage(title: 'b'),
+          MyHomePage(title: 'c'),
+          MyHomePage(title: 'd'),
+        ],
+      ),
       // body: Container(
       //   color: Colors.black12,
       //   child: AnimatedWidgetSlider(

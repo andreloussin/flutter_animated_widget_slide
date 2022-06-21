@@ -4,7 +4,8 @@ import 'dart:io';
 import 'package:flutter_animated_widget_slide/main.dart';
 
 typedef AnimatedWidgetSliderBuilder = Widget? Function(Widget data, int index);
-typedef AnimatedWidgetSliderScrollListener = Widget? Function(double level);
+typedef AnimatedWidgetSliderScrollListener = Widget? Function(
+    double level, int index);
 
 class AnimatedWidgetSlider extends StatefulWidget {
   AnimatedWidgetSliderController? controller;
@@ -89,7 +90,7 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
   AnimatedWidgetSliderState(
       {this.scrollListener, this.controller, this.startAutoScroll = false}) {
     controller?.setParent(this);
-    scrollListener = scrollListener ?? (value) {};
+    scrollListener = scrollListener ?? (value, index) {};
   }
 
   @override
@@ -291,8 +292,10 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
         fromRight();
       }
       step += _isPlaying ? 1 : 0;
-      scrollListener!(step /
-          (10 * (_tempWaitSeconde > 0 ? _tempWaitSeconde : _waitSeconde)));
+      scrollListener!(
+          step /
+              (10 * (_tempWaitSeconde > 0 ? _tempWaitSeconde : _waitSeconde)),
+          index % this.widget.contents!.length);
     }
   }
 

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animated_widget_slide/main.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/animated_widget_slider.dart';
 
 class StoryPage extends StatefulWidget {
+  final List<Widget> contents;
+  StoryPage({Key? key, required this.contents}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() => StoryPageState();
 }
@@ -12,32 +14,29 @@ class StoryPageState extends State<StoryPage> {
   final GlobalKey _widgetKey = GlobalKey();
   Size size = const Size(0, 0);
   double step = 0;
+  int scrollingIndex = 0;
   List<Widget> _timers = [];
+  AnimatedWidgetSliderController controller = AnimatedWidgetSliderController();
+
+  double makeStep(int index, int timerIndex) {
+    return timerIndex < index
+        ? 1.0
+        : timerIndex == index
+            ? step
+            : 0.0;
+  }
 
   @override
   void initState() {
     super.initState();
     _widgetSlider = Container();
     Widget space = const SizedBox(width: 5);
-    _timers = [
-      space,
-      Timer(step: 0.8),
-      space,
-      Timer.builder(() => 0.2),
-      space,
-      Timer.builder(() => 0.2),
-      space,
-      Timer.builder(() => 0.2),
-      space,
-      Timer.builder(() => 0.2),
-      space,
-      Timer.builder(() => 0.2),
-      space,
-      Timer.builder(() => 0.2),
-      space,
-      Timer.builder(() => 0.2),
-      space,
-    ];
+    _timers = [space];
+
+    for (int i = 0; i < widget.contents.length; i++) {
+      _timers.add(Timer());
+      _timers.add(space);
+    }
 
     WidgetsBinding.instance.addPostFrameCallback((data) {
       size = (_widgetKey.currentContext?.findRenderObject() as RenderBox).size;
@@ -46,21 +45,24 @@ class StoryPageState extends State<StoryPage> {
           width: size.width,
           height: size.height - 65,
           child: AnimatedWidgetSlider(
-            scrollListener: (data) {
+            startAutoScroll: true,
+            controller: controller,
+            scrollListener: (data, index) {
               setState(() {
-                step = data;
+                for (int i = 0; i < widget.contents.length; i++) {
+                  if (i < index) {
+                    (_timers.elementAt(2 * i + 1) as Timer).setStep(1);
+                  } else if (i == index) {
+                    (_timers.elementAt(2 * i + 1) as Timer).setStep(data);
+                  } else {
+                    (_timers.elementAt(2 * i + 1) as Timer).setStep(0);
+                  }
+                  step = data;
+                }
+                scrollingIndex = index;
               });
             },
-            contents: const [
-              Text("AAAAA"),
-              Text("BBBBB"),
-              Text("CCCCC"),
-              Text("DDDDD"),
-              MyHomePage(title: 'a'),
-              MyHomePage(title: 'b'),
-              MyHomePage(title: 'c'),
-              MyHomePage(title: 'd'),
-            ],
+            contents: widget.contents,
           ),
         );
       });
@@ -69,33 +71,6 @@ class StoryPageState extends State<StoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    // return Container(
-    //     color: Colors.white12,
-    //     child: Column(
-    //       children: [
-    // Container(
-    //   height: 5,
-    //   color: Colors.red,
-    // ),
-    //         (Center(child: Text("Centered")))
-    //         // Container(
-    //         //   color: Colors.white,
-    //         //   child:
-    // AnimatedWidgetSlider(
-    //         //     contents: [
-    //         //       Text("AAAAA"),
-    //         //       Text("BBBBB"),
-    //         //       Text("CCCCC"),
-    //         //       Text("DDDDD"),
-    //         //       // MyHomePage(title: 'a'),
-    //         //       // MyHomePage(title: 'b'),
-    //         //       // MyHomePage(title: 'c'),
-    //         //       // MyHomePage(title: 'd'),
-    //         //     ],
-    //         //   ),
-    //         // ),
-    //       ],
-    //     ));
     return SizedBox.expand(
         child: Column(
       key: _widgetKey,
@@ -107,7 +82,6 @@ class StoryPageState extends State<StoryPage> {
           alignment: Alignment.centerLeft,
           height: 5,
           width: size.width,
-          color: Colors.red,
           child: Row(children: _timers),
         ),
         _widgetSlider,
@@ -127,61 +101,75 @@ class StoryPageState extends State<StoryPage> {
 
 class Timer extends StatefulWidget {
   double step = 0;
-  double Function()? stepBuilder;
-  Timer({super.key, double step = 0}) {
+  double Function(int index)? stepBuilder;
+  final int index;
+  Timer(
+      {super.key,
+      double step = 0.0,
+      this.index = 0,
+      double Function(int index)? stepBuilder}) {
     this.step =
         0.0 <= step && step <= 1.0 ? step : throw "step must be in [0;1] ";
-    stepBuilder = stepBuilder ?? () => step;
-  }
-  @override
-  State<StatefulWidget> createState() {
-    return TimerState();
+    this.stepBuilder = stepBuilder ?? (index) => step;
   }
 
-  static Timer builder(/** 0 <= step <= 1 */ double Function() stepBuilder) {
-    return Timer(step: stepBuilder());
+  TimerState _ts = TimerState();
+
+  void setStep(double step) {
+    this.step = step;
+    _ts.stepChange(step);
+  }
+
+  @override
+  State<StatefulWidget> createState() {
+    return _ts;
+  }
+
+  static Timer builder(
+      {int index = 0,
+      /** 0 <= step <= 1 */ required double Function(int index) stepBuilder}) {
+    return Timer(
+      index: index,
+      step: stepBuilder(index),
+      stepBuilder: stepBuilder,
+    );
   }
 }
 
 class TimerState extends State<Timer> {
-  double width = 0;
+  double width = 0.0;
+  double ww = 0;
   final GlobalKey _widgetKey = GlobalKey();
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((data) {
-      setState(() {
-        width = (_widgetKey.currentContext?.findRenderObject() as RenderBox)
-            .size
-            .width;
-        print("new $width");
-      });
+  void stepChange(double step) {
+    setState(() {
+      ww = setStep(step);
     });
+  }
+
+  double setStep(double step) {
+    if (width == 0.0) {
+      width = (_widgetKey.currentContext?.findRenderObject() as RenderBox)
+          .size
+          .width;
+    }
+    return width *
+        (0.0 <= step && step <= 1.0
+            ? step
+            : throw "stepBuilder return must be in [0;1] ");
   }
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
-        key: _widgetKey,
         child: SizedBox.expand(
             child: Container(
-                color: Colors.green[200],
+                key: _widgetKey,
+                color: Colors.blue[50],
                 child: Center(
                     child: Container(
-                        color: Colors.green,
-                        width: width *
-                            (0.0 <= widget.stepBuilder!() &&
-                                    widget.stepBuilder!() <= 1.0
-                                ? widget.stepBuilder!()
-                                : throw "stepBuilder return must be in [0;1] "))))));
-  }
-}
-
-class a extends Widget {
-  @override
-  Element createElement() {
-    // TODO: implement createElement
-    throw UnimplementedError();
+                  color: Colors.blue,
+                  width: ww,
+                )))));
   }
 }
