@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animated_widget_slide/test.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/animated_widget_slider.dart';
+import 'package:flutter_animated_widget_slide/widget_slider/p_story.dart';
 
 void main() {
   runApp(
-    MaterialApp(title: "ece", home: Test()
+    MaterialApp(title: "ece", home: StoryPage()
         // Scaffold(
         //   body: Container(
         //       color: Colors.black,

@@ -11,13 +11,19 @@ class AnimatedWidgetSlider extends StatefulWidget {
   AnimatedWidgetSliderScrollListener? scrollListener;
   late AnimatedWidgetSliderState _bi;
   late List<Widget>? contents;
+  bool startAutoScroll = false;
+
   AnimatedWidgetSlider(
-      {Key? key, this.contents, this.scrollListener, this.controller})
+      {Key? key,
+      this.contents,
+      this.scrollListener,
+      this.controller,
+      bool startAutoScroll = false})
       : super(key: key) {
     _bi = AnimatedWidgetSliderState(
-      controller: controller,
-      scrollListener: scrollListener,
-    );
+        controller: controller,
+        scrollListener: scrollListener,
+        startAutoScroll: startAutoScroll);
   }
 
   static AnimatedWidgetSlider builder(
@@ -25,7 +31,8 @@ class AnimatedWidgetSlider extends StatefulWidget {
       required List<Widget> items,
       AnimatedWidgetSliderBuilder? builder,
       AnimatedWidgetSliderScrollListener? scrollListener,
-      AnimatedWidgetSliderController? controller}) {
+      AnimatedWidgetSliderController? controller,
+      bool startAutoScroll = false}) {
     builder = builder ?? (widget, index) => widget;
     List<Widget> li = [];
     if (items.isNotEmpty) {
@@ -40,7 +47,8 @@ class AnimatedWidgetSlider extends StatefulWidget {
         key: key,
         contents: li,
         controller: controller,
-        scrollListener: scrollListener);
+        scrollListener: scrollListener,
+        startAutoScroll: startAutoScroll);
   }
 
   @override
@@ -67,7 +75,8 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
   final GlobalKey widgetKey = GlobalKey();
   bool _isPlaying = true;
   bool _turnNormal = true;
-  bool _autoNexting = false;
+  bool autoNexting = false;
+  bool startAutoScroll = false;
   int _waitSeconde = 2;
   int _tempWaitSeconde = 0;
   Widget? _actual;
@@ -77,7 +86,8 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
   double minScale = 0.8;
   double width = 0;
 
-  AnimatedWidgetSliderState({this.scrollListener, this.controller}) {
+  AnimatedWidgetSliderState(
+      {this.scrollListener, this.controller, this.startAutoScroll = false}) {
     controller?.setParent(this);
     scrollListener = scrollListener ?? (value) {};
   }
@@ -122,79 +132,99 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
 
     WidgetsBinding.instance.addPostFrameCallback((data) {
       widthChanged();
+      if (startAutoScroll) startAutoNexting();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onHorizontalDragEnd: (details) {
-        _autoNexting = false;
-        if (details.velocity.pixelsPerSecond.dx > 0) {
-          fromLeft();
-        } else {
-          fromRight();
-        }
-      },
-      child: Stack(
-        key: widgetKey,
-        alignment: Alignment.center,
-        children: [
-          AnimatedBuilder(
-            animation: animController,
-            builder: (BuildContext _, child) {
-              return Transform(
+    return SizedBox.expand(
+      child: GestureDetector(
+        onHorizontalDragEnd: (details) {
+          autoNexting = false;
+          if (details.velocity.pixelsPerSecond.dx > 0) {
+            fromLeft();
+          } else {
+            fromRight();
+          }
+        },
+        child: SizedBox.expand(
+          child: Container(
+            key: widgetKey,
+            child: Center(
+              child: Stack(
                 alignment: Alignment.center,
-                transform: _turnNormal
-                    ? (Matrix4.identity()
-                      ..setEntry(3, 2, 0.001)
-                      ..rotateY(rotateAnim.value)
-                      ..scale(scale_value())
-                      ..translate(-(width * (1 - math.cos(rotateAnim.value))),
-                          0, -(width * math.sin(rotateAnim.value))))
-                    : (Matrix4.identity()
-                      ..setEntry(3, 2, 0.001)
-                      ..rotateY(-rotateAnim.value)
-                      ..scale(scale_value())
-                      ..translate(
-                        (width * (1 - math.cos(rotateAnim.value))),
-                        0,
-                        -(width * math.sin(rotateAnim.value)),
-                      )),
-                child: child,
-              );
-            },
-            child: _hidden,
+                children: [
+                  AnimatedBuilder(
+                    animation: animController,
+                    builder: (BuildContext _, child) {
+                      return Transform(
+                        alignment: Alignment.center,
+                        transform: _turnNormal
+                            ? (Matrix4.identity()
+                              ..setEntry(3, 2, 0.001)
+                              ..rotateY(rotateAnim.value)
+                              ..scale(scale_value())
+                              ..translate(
+                                  -(width * (1 - math.cos(rotateAnim.value))),
+                                  rotateAnim.value > math.pi / 2 - math.pi / 12
+                                      ? 10000
+                                      : 0,
+                                  -(width * math.sin(rotateAnim.value))))
+                            : (Matrix4.identity()
+                              ..setEntry(3, 2, 0.001)
+                              ..rotateY(-rotateAnim.value)
+                              ..scale(scale_value())
+                              ..translate(
+                                (width * (1 - math.cos(rotateAnim.value))),
+                                rotateAnim.value > math.pi / 2 - math.pi / 12
+                                    ? 10000
+                                    : 0,
+                                -(width * math.sin(rotateAnim.value)),
+                              )),
+                        child: child,
+                      );
+                    },
+                    child: _hidden,
+                  ),
+                  AnimatedBuilder(
+                    animation: animController,
+                    builder: (BuildContext _, child) {
+                      return Transform(
+                        alignment: Alignment.center,
+                        transform: _turnNormal
+                            ? (Matrix4.identity()
+                              ..setEntry(3, 2, 0.001)
+                              ..rotateY(rotateAnim.value - math.pi / 2)
+                              ..scale(scale_value())
+                              ..translate(
+                                  width -
+                                      (width * (math.sin(rotateAnim.value))),
+                                  rotateAnim.value < math.pi / 12 ? 10000 : 0,
+                                  -width +
+                                      (width *
+                                          (1 - math.cos(rotateAnim.value)))))
+                            : (Matrix4.identity()
+                              ..setEntry(3, 2, 0.001)
+                              ..rotateY(math.pi / 2 - rotateAnim.value)
+                              ..scale(scale_value())
+                              ..translate(
+                                (-width +
+                                    (width * (math.sin(rotateAnim.value)))),
+                                rotateAnim.value < math.pi / 12 ? 10000 : 0,
+                                -width +
+                                    (width * (1 - math.cos(rotateAnim.value))),
+                              )),
+                        child: child,
+                      );
+                    },
+                    child: _visible,
+                  ),
+                ],
+              ),
+            ),
           ),
-          AnimatedBuilder(
-            animation: animController,
-            builder: (BuildContext _, child) {
-              return Transform(
-                alignment: Alignment.center,
-                transform: _turnNormal
-                    ? (Matrix4.identity()
-                      ..setEntry(3, 2, 0.001)
-                      ..rotateY(rotateAnim.value - math.pi / 2)
-                      ..scale(scale_value())
-                      ..translate(
-                          width - (width * (math.sin(rotateAnim.value))),
-                          rotateAnim.value < math.pi / 12 ? 10000 : 0,
-                          -width + (width * (1 - math.cos(rotateAnim.value)))))
-                    : (Matrix4.identity()
-                      ..setEntry(3, 2, 0.001)
-                      ..rotateY(math.pi / 2 - rotateAnim.value)
-                      ..scale(scale_value())
-                      ..translate(
-                        (-width + (width * (math.sin(rotateAnim.value)))),
-                        rotateAnim.value < math.pi / 12 ? 10000 : 0,
-                        -width + (width * (1 - math.cos(rotateAnim.value))),
-                      )),
-                child: child,
-              );
-            },
-            child: _visible,
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -245,14 +275,14 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
   }
 
   Future<void> startAutoNexting() async {
-    while (_autoNexting) {
-      _autoNexting = false;
+    while (autoNexting) {
+      autoNexting = false;
       await Future.delayed(const Duration(milliseconds: 200));
     }
     play();
-    _autoNexting = true;
+    autoNexting = true;
     int step = 0;
-    while (_autoNexting) {
+    while (autoNexting) {
       await Future.delayed(const Duration(milliseconds: 100));
       if (step >=
           10 * (_tempWaitSeconde > 0 ? _tempWaitSeconde : _waitSeconde)) {
@@ -267,7 +297,7 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
   }
 
   void stopAutoNexting() {
-    _autoNexting = false;
+    autoNexting = false;
   }
 
   void pause() {
@@ -379,8 +409,8 @@ class AnimatedWidgetSliderController {
   }
 
   bool isAutonexting() {
-    // return AnimatedWidgetSliderState._autoNexting;
-    return parent!._autoNexting;
+    // return AnimatedWidgetSliderState.autoNexting;
+    return parent!.autoNexting;
   }
 }
 

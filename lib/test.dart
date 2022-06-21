@@ -40,7 +40,7 @@ class TestState extends State<Test> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: indexed,
         fixedColor: Colors.blue,
-        items: <BottomNavigationBarItem>[
+        items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
               backgroundColor: Color.fromARGB(255, 179, 179, 179),
               label: "Preview",
@@ -53,10 +53,10 @@ class TestState extends State<Test> {
               backgroundColor: Color.fromARGB(255, 179, 179, 179),
               label: "Next",
               icon: Icon(Icons.next_plan)),
-          BottomNavigationBarItem(
-              backgroundColor: Color.fromARGB(255, 179, 179, 179),
-              label: _isPlaying ? "Pause" : "PLay",
-              icon: Icon(_isPlaying ? Icons.pause : Icons.play_arrow_outlined)),
+          // BottomNavigationBarItem(
+          // backgroundColor: Color.fromARGB(255, 179, 179, 179),
+          // label: _isPlaying ? "Pause" : "PLay",
+          // icon: Icon(_isPlaying ? Icons.pause : Icons.play_arrow_outlined)),
         ],
         onTap: (index) {
           indexed = index;
