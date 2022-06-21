@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'dart:io';
 import 'package:flutter_animated_widget_slide/main.dart';
+import 'package:flutter_animated_widget_slide/widget_slider/play_video.dart';
 
 typedef AnimatedWidgetSliderBuilder = Widget? Function(Widget data, int index);
 typedef AnimatedWidgetSliderScrollListener = Widget? Function(
@@ -25,6 +26,19 @@ class AnimatedWidgetSlider extends StatefulWidget {
         controller: controller,
         scrollListener: scrollListener,
         startAutoScroll: startAutoScroll);
+    List<Widget> li = [];
+
+    if (contents!.isNotEmpty) {
+      for (Widget item in contents!) {
+        if (item != null) {
+          li.add(Slide(
+            widget: item,
+            parentController: controller,
+          ));
+        }
+      }
+    }
+    contents = li;
   }
 
   static AnimatedWidgetSlider builder(
@@ -34,16 +48,22 @@ class AnimatedWidgetSlider extends StatefulWidget {
       AnimatedWidgetSliderScrollListener? scrollListener,
       AnimatedWidgetSliderController? controller,
       bool startAutoScroll = false}) {
+    //
     builder = builder ?? (widget, index) => widget;
     List<Widget> li = [];
+
     if (items.isNotEmpty) {
       for (Widget item in items) {
         Widget? w = builder(item, items.indexOf(item));
         if (w != null) {
-          li.add(Slide(widget: w));
+          li.add(Slide(
+            widget: w,
+            parentController: controller,
+          ));
         }
       }
     }
+
     return AnimatedWidgetSlider(
         key: key,
         contents: li,
@@ -142,7 +162,7 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
     return SizedBox.expand(
       child: GestureDetector(
         onHorizontalDragEnd: (details) {
-          autoNexting = false;
+          // autoNexting = false;
           if (details.velocity.pixelsPerSecond.dx > 0) {
             fromLeft();
           } else {
@@ -325,6 +345,9 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
 
   void fromRight({Widget? widget}) {
     setState(() {
+      if (autoNexting) {
+        _tempWaitSeconde = 2 * _waitSeconde;
+      }
       animController.reset();
       if (widget == null) {
         index++;
@@ -349,6 +372,12 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
 
   void fromLeft({Widget? widget}) {
     setState(() {
+      if (autoNexting) {
+        _tempWaitSeconde = 2 * _waitSeconde;
+      }
+      print(_tempWaitSeconde > 0
+          ? "_tempWaitSeconde: $_tempWaitSeconde"
+          : "_waitSeconde: $_waitSeconde");
       animController.reset();
       if (widget == null) {
         index--;
@@ -419,8 +448,14 @@ class AnimatedWidgetSliderController {
 
 class Slide extends StatelessWidget {
   final Widget? widget;
+  final AnimatedWidgetSliderController? parentController;
 
-  const Slide({super.key, this.widget});
+  Slide({super.key, this.widget, this.parentController}) {
+    // if (widget is VideoPlayerApp) {
+    //   print("$widget");
+    //   (widget as VideoPlayerApp).setMethod(parentController);
+    // }
+  }
 
   @override
   Widget build(BuildContext context) {

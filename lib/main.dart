@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animated_widget_slide/test.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/animated_widget_slider.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/p_story.dart';
+import 'package:flutter_animated_widget_slide/widget_slider/play_video.dart';
 
 void main() {
   runApp(
     MaterialApp(
         title: "ece",
         home: StoryPage(
-          contents: const [
-            Text("AAAAA"),
-            MyHomePage(title: 'a'),
-            MyHomePage(title: 'b'),
-            Text("BBBBB"),
-            Text("CCCCC"),
-            Text("DDDDD"),
-            MyHomePage(title: 'c'),
-            MyHomePage(title: 'd'),
+          contents: [
+            VideoPlayerApp(),
+            const Text("AAAAA"),
+            const MyHomePage(title: 'a'),
+            const MyHomePage(title: 'b'),
+            const Text("BBBBB"),
+            VideoPlayerApp(),
+            const Text("CCCCC"),
+            const Text("DDDDD"),
+            const MyHomePage(title: 'c'),
+            VideoPlayerApp(),
+            const MyHomePage(title: 'd'),
           ],
         )
         // Scaffold(
