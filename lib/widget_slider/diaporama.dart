@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 import 'package:flutter_animated_widget_slide/widget_slider/diaporamaShow.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/timer.dart';
 
@@ -7,7 +8,12 @@ class Diaporama extends StatefulWidget {
   DiaporamaShowController? controller;
   DiaporamaState st = DiaporamaState();
 
-  Diaporama({super.key, this.stories = const [], this.controller}) {}
+  Diaporama(
+      {super.key,
+      this.stories = const [],
+      DiaporamaShowController? controller}) {
+    this.controller = controller ?? DiaporamaShowController();
+  }
   @override
   DiaporamaState createState() {
     return st;
@@ -18,7 +24,15 @@ class Diaporama extends StatefulWidget {
   }
 
   void setOnDiapoPrev(void Function() onDiapoPrev) {
-    st.setOnDiapoEnd(onDiapoPrev);
+    st.setOnDiapoPrev(onDiapoPrev);
+  }
+
+  void pause() {
+    controller!.pause();
+  }
+
+  void play() {
+    controller!.play();
   }
 }
 
@@ -26,27 +40,39 @@ class DiaporamaState extends State<Diaporama> {
   late DiaporamaShow diapo;
   late TimerBar timerBar;
   late Widget diaposContainer;
+  Key key = Key("DiaporamaState${Random().nextInt(1000)}");
   final GlobalKey _widgetKey = GlobalKey();
   Size size = const Size(0, 0);
+  bool initialized = false;
+  void Function()? onDiapoEnd;
+  void Function()? onDiapoPrev;
 
   void setOnDiapoEnd(void Function() onDiapoEnd) {
-    diapo.onDiapoEnd = onDiapoEnd;
+    this.onDiapoEnd = onDiapoEnd;
+    if (initialized) {
+      diapo.onDiapoEnd = this.onDiapoEnd;
+    }
   }
 
   void setOnDiapoPrev(void Function() onDiapoPrev) {
-    diapo.onDiapoPrev = onDiapoPrev;
+    this.onDiapoPrev = onDiapoPrev;
+    if (initialized) {
+      diapo.onDiapoPrev = this.onDiapoPrev;
+    }
   }
 
   @override
   void initState() {
     super.initState();
+    print(
+        "diaporama.DiaporamaState.initState..Widget>controller ::: ${widget.controller}");
     diaposContainer = Container();
     timerBar = TimerBar(number: widget.stories.length);
     diapo = DiaporamaShow.builder(
-        controller: widget.controller,
+        controller: widget.controller!,
         items: widget.stories,
         startAutoScroll: true,
-        stepListener: timerBar?.setStep);
+        stepListener: timerBar.setStep);
     WidgetsBinding.instance.addPostFrameCallback((data) {
       size = (_widgetKey.currentContext?.findRenderObject() as RenderBox).size;
       setState(() {
@@ -56,7 +82,11 @@ class DiaporamaState extends State<Diaporama> {
           child: diapo,
         );
       });
+
+      diapo.onDiapoEnd = onDiapoEnd;
+      diapo.onDiapoPrev = onDiapoPrev;
     });
+    initialized = true;
   }
 
   @override

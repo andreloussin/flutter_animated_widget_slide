@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'dart:io';
 import 'package:flutter_animated_widget_slide/main.dart';
+import 'package:flutter_animated_widget_slide/widget_slider/diaporama.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/play_video.dart';
 
 typedef AnimatedWidgetSliderBuilder = Widget? Function(Widget data, int index);
@@ -56,10 +57,7 @@ class AnimatedWidgetSlider extends StatefulWidget {
       for (Widget item in items) {
         Widget? w = builder(item, items.indexOf(item));
         if (w != null) {
-          li.add(Slide(
-            widget: w,
-            parentController: controller,
-          ));
+          li.add(w);
         }
       }
     }
@@ -75,12 +73,12 @@ class AnimatedWidgetSlider extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _bi;
 
-  void fromRight(Widget widget) {
-    _bi.fromRight(widget: widget);
+  void fromRight() {
+    _bi.fromRight();
   }
 
-  void fromLeft(Widget widget) {
-    _bi.fromRight(widget: widget);
+  void fromLeft() {
+    _bi.fromRight();
   }
 }
 
@@ -161,8 +159,20 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
   Widget build(BuildContext context) {
     return SizedBox.expand(
       child: GestureDetector(
+        onLongPressStart: (detail) {
+          pauseDiapo();
+        },
+        onLongPressEnd: (detail) {
+          playDiapo();
+        },
+        onTapUp: (event) {
+          if (event.globalPosition.dx < width / 2) {
+            prevDiapo();
+          } else {
+            nextDiapo();
+          }
+        },
         onHorizontalDragEnd: (details) {
-          // autoNexting = false;
           if (details.velocity.pixelsPerSecond.dx > 0) {
             fromLeft();
           } else {
@@ -323,6 +333,44 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
     autoNexting = false;
   }
 
+  void pauseDiapo() {
+    try {
+      ((widget.contents!.elementAt(index) as Slide).child() as Diaporama)
+          .pause();
+    } catch (e) {
+      print("$e");
+    }
+  }
+
+  void playDiapo() {
+    try {
+      ((widget.contents!.elementAt(index) as Slide).child() as Diaporama)
+          .play();
+    } catch (e) {
+      print("$e");
+    }
+  }
+
+  void prevDiapo() {
+    try {
+      ((widget.contents!.elementAt(index) as Slide).child() as Diaporama)
+          .controller!
+          .prev();
+    } catch (e) {
+      print("$e");
+    }
+  }
+
+  void nextDiapo() {
+    try {
+      ((widget.contents!.elementAt(index) as Slide).child() as Diaporama)
+          .controller!
+          .next();
+    } catch (e) {
+      print("$e");
+    }
+  }
+
   void pause() {
     _isPlaying = false;
   }
@@ -343,61 +391,61 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
         : lastScaleAnim.value;
   }
 
-  void fromRight({Widget? widget}) {
-    setState(() {
-      if (autoNexting) {
-        _tempWaitSeconde = 2 * _waitSeconde;
-      }
-      animController.reset();
-      if (widget == null) {
+  void fromRight() {
+    print("index: $index && ${widget.contents!.length}");
+    if (index < widget.contents!.length && index >= 0) {
+      setState(() {
+        // if (autoNexting) {
+        //   _tempWaitSeconde = 2 * _waitSeconde;
+        // }
+        print("fromRight__");
+        animController.reset();
         index++;
-        try {
-          widget = this
-              .widget
-              .contents!
-              .elementAt(index % this.widget.contents!.length);
-        } catch (e) {
-          widget = Container();
+        print("wid: ${widget.contents!.elementAt(index)}");
+        Widget wid = widget.contents!.elementAt(index);
+        print("wid: $wid");
+        if (_actual != _hidden) {
+          _hidden = _visible;
         }
-      }
-      if (_actual != _hidden) {
-        _hidden = _visible;
-      }
-      _visible = widget;
-      _turnNormal = true;
-      _actual = _visible;
-      animController.forward();
-    });
+        _visible = wid;
+        _turnNormal = true;
+        _actual = _visible;
+        animController.forward();
+      });
+    }
   }
 
-  void fromLeft({Widget? widget}) {
-    setState(() {
-      if (autoNexting) {
-        _tempWaitSeconde = 2 * _waitSeconde;
-      }
-      print(_tempWaitSeconde > 0
-          ? "_tempWaitSeconde: $_tempWaitSeconde"
-          : "_waitSeconde: $_waitSeconde");
-      animController.reset();
-      if (widget == null) {
+  void fromLeft() {
+    print("index: $index && ${widget.contents!.length}");
+    if (index > 0 && index <= widget.contents!.length) {
+      setState(() {
+        // if (autoNexting) {
+        //   _tempWaitSeconde = 2 * _waitSeconde;
+        // }
+        print("fromLeft");
+        animController.reset();
         index--;
-        try {
-          widget = this
-              .widget
-              .contents!
-              .elementAt(index % this.widget.contents!.length);
-        } catch (e) {
-          widget = Container();
+        Widget wid = widget.contents!.elementAt(index);
+        if (_actual != _visible) {
+          _visible = _hidden;
         }
-      }
-      if (_actual != _visible) {
-        _visible = _hidden;
-      }
-      _hidden = widget;
-      _turnNormal = false;
-      _actual = _hidden;
-      animController.forward();
-    });
+        _hidden = wid;
+        _turnNormal = false;
+        _actual = _hidden;
+        animController.forward();
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => const MyHomePage(
+                  title: "home",
+                )));
   }
 }
 
@@ -444,11 +492,21 @@ class AnimatedWidgetSliderController {
     // return AnimatedWidgetSliderState.autoNexting;
     return parent!.autoNexting;
   }
+
+  void dispose() {
+    pause();
+    stopAutoNexting();
+    while (isAutonexting()) {}
+  }
 }
 
 class Slide extends StatelessWidget {
   final Widget? widget;
   final AnimatedWidgetSliderController? parentController;
+
+  Widget? child() {
+    return widget;
+  }
 
   Slide({super.key, this.widget, this.parentController}) {
     if (widget != null && widget is VideoPlayerApp) {

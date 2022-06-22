@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/animated_widget_slider.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/p_story.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/play_video.dart';
@@ -7,34 +10,84 @@ import 'package:flutter_animated_widget_slide/widget_slider/story.dart';
 
 void main() {
   List<Diaporama> diaps = [
+    // Diaporama(
+    //   stories: const [
+    //     //VideoPlayerApp(),
+    //     Text("AAAAA"),
+    //     MyHomePage(title: 'a'),
+    //     Text("AAAAA"),
+    //     MyHomePage(title: 'a'),
+    //     MyHomePage(title: 'b'),
+    //   ],
+    // ),
+    // Diaporama(
+    //   stories: const [
+    //     //VideoPlayerApp(),
+    //     Text("AAAAA"),
+    //     MyHomePage(title: 'a'),
+    //     Text("AAAAA"),
+    //     MyHomePage(title: 'a'),
+    //     MyHomePage(title: 'b'),
+    //   ],
+    // ),
     Diaporama(
-      stories: [
-        VideoPlayerApp(),
-        const Text("AAAAA"),
-        const MyHomePage(title: 'a'),
-        const Text("AAAAA"),
-        const MyHomePage(title: 'a'),
-        const MyHomePage(title: 'b'),
+      stories: const [
+        MyHomePage(title: 'a'),
+        Text("AAAAA"),
+        MyHomePage(title: 'ab'),
       ],
     ),
     Diaporama(
-      stories: [
-        const MyHomePage(title: 'a'),
-        const Text("AAAAA"),
-        const MyHomePage(title: 'a'),
+      stories: const [
+        Text("AAAAA"),
+        MyHomePage(title: 'b'),
       ],
     ),
     Diaporama(
-      stories: [
-        const Text("AAAAA"),
-        const MyHomePage(title: 'b'),
+      stories: const [
+        MyHomePage(title: 'a'),
+        Text("AAAAA"),
+        MyHomePage(title: 'ab'),
       ],
-    )
+    ),
+    Diaporama(
+      stories: const [
+        Text("AAAAA"),
+        MyHomePage(title: 'b'),
+      ],
+    ),
+    // Diaporama(
+    //   stories: const [
+    //     MyHomePage(title: 'b'),
+    //     Text("AAAAA"),
+    //     MyHomePage(title: 'a'),
+    //   ],
+    // ),
   ];
   runApp(
     MaterialApp(
       title: "ece",
-      home: StoryWidget(contents: diaps),
+      home: StoryWidget(
+        contents: diaps,
+        onDispose: () {
+          print("need to exit ${Platform.isLinux}");
+          if (Platform.isAndroid) {
+            SystemNavigator.pop();
+          } else if (Platform.isIOS) {
+            exit(0);
+          } else {
+            return 0;
+          }
+        },
+      ),
+      // home: AnimatedWidgetSlider(contents: const [
+      //   //VideoPlayerApp(),
+      //   Text("AAAAA"),
+      //   MyHomePage(title: 'a'),
+      //   Text("AAAAA"),
+      //   MyHomePage(title: 'a'),
+      //   MyHomePage(title: 'b'),
+      // ]),
       // Scaffold(
       //   body: Container(
       //       color: Colors.black,
@@ -146,14 +199,8 @@ class _BibiState extends State<Bibi> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           _w,
-          ElevatedButton(
-              onPressed: () =>
-                  _w.fromLeft(const MyHomePage(title: 'From fromLeft')),
-              child: const Text("Left")),
-          ElevatedButton(
-              onPressed: () =>
-                  _w.fromRight(const MyHomePage(title: 'From fromRight')),
-              child: const Text("Right")),
+          ElevatedButton(onPressed: () {}, child: const Text("Left")),
+          ElevatedButton(onPressed: () {}, child: const Text("Right")),
         ],
       ),
     );

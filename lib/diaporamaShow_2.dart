@@ -4,7 +4,7 @@ class DiaporamaShow extends StatefulWidget {
   List<Slide> slides;
   List<Widget> children;
   Slide Function(Widget child)? build;
-  late final DiaporamaShowController? controller;
+  DiaporamaShowController? controller;
   bool startAutoScroll = false;
   void Function()? onDiapoEnd;
   void Function()? onDiapoPrev;
@@ -12,7 +12,7 @@ class DiaporamaShow extends StatefulWidget {
 
   DiaporamaShow(
       {Key? key,
-      this.controller,
+      DiaporamaShowController? controller,
       void Function(int index, double step)? stepListener,
       this.startAutoScroll = false,
       this.slides = const [],
@@ -20,7 +20,7 @@ class DiaporamaShow extends StatefulWidget {
       this.onDiapoPrev,
       this.children = const []})
       : super(key: key) {
-    controller ??= DiaporamaShowController();
+    this.controller = controller ?? DiaporamaShowController();
     this.stepListener = stepListener ?? (index, step) {};
   }
 
@@ -53,16 +53,21 @@ class DiaporamaShow extends StatefulWidget {
   }
 
   @override
-  State<StatefulWidget> createState() => DiaporamaShowState();
+  State<StatefulWidget> createState() => DiaporamaShowState(
+        controller: controller,
+      );
 }
 
 class DiaporamaShowState extends State<DiaporamaShow> {
   int index = 0;
   double step = 0.0;
+  DiaporamaShowController? controller;
   bool autoNexting = true;
   bool playing = false;
 
-  DiaporamaShowState();
+  DiaporamaShowState({this.controller}) {
+    controller?.setParent(this);
+  }
 
   @override
   void initState() {
@@ -70,7 +75,6 @@ class DiaporamaShowState extends State<DiaporamaShow> {
     if (widget.startAutoScroll && widget.slides.isNotEmpty) {
       autoNextIn(widget.slides.elementAt(index).waitTime);
     }
-    widget.controller?.setParent(this);
   }
 
   @override
@@ -81,16 +85,25 @@ class DiaporamaShowState extends State<DiaporamaShow> {
   }
 
   int next() {
+    print("\n################");
+    print("autoNexting: $autoNexting");
     setState(() {
       step = 0;
+      print("index before: $index");
+      print(
+          "index + 1 >= widget.slides.length ::: ${index + 1 >= widget.slides.length}");
       if (index + 1 >= widget.slides.length) {
         stop();
         try {
+          print("widget.onDiapoEnd!() ::: ${widget.onDiapoEnd}");
           widget.onDiapoEnd!();
-        } catch (e) {}
+        } catch (e) {
+          print("$e");
+        }
       } else {
         index++;
       }
+      print("index after: $index");
     });
     if (autoNexting) {
       autoNextIn(widget.slides.elementAt(index).waitTime);
@@ -165,12 +178,12 @@ class Slide extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(child: Center(child: Container(child: child)));
+    return child ?? Container();
   }
 }
 
 class DiaporamaShowController {
-  late final DiaporamaShowState? parent;
+  DiaporamaShowState? parent;
 
   void setParent(DiaporamaShowState parent) {
     this.parent = parent;
