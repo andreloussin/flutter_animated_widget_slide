@@ -2,45 +2,58 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/animated_widget_slider.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/p_story.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/play_video.dart';
+import 'package:flutter_animated_widget_slide/widget_slider/diaporama.dart';
+import 'package:flutter_animated_widget_slide/widget_slider/story.dart';
 
 void main() {
+  List<Diaporama> diaps = [
+    Diaporama(
+      stories: [
+        VideoPlayerApp(),
+        const Text("AAAAA"),
+        const MyHomePage(title: 'a'),
+        const Text("AAAAA"),
+        const MyHomePage(title: 'a'),
+        const MyHomePage(title: 'b'),
+      ],
+    ),
+    Diaporama(
+      stories: [
+        const MyHomePage(title: 'a'),
+        const Text("AAAAA"),
+        const MyHomePage(title: 'a'),
+      ],
+    ),
+    Diaporama(
+      stories: [
+        const Text("AAAAA"),
+        const MyHomePage(title: 'b'),
+      ],
+    )
+  ];
   runApp(
     MaterialApp(
-        title: "ece",
-        home: StoryPage(
-          contents: [
-            VideoPlayerApp(),
-            const Text("AAAAA"),
-            const MyHomePage(title: 'a'),
-            const MyHomePage(title: 'b'),
-            const Text("BBBBB"),
-            VideoPlayerApp(),
-            const Text("CCCCC"),
-            const Text("DDDDD"),
-            const MyHomePage(title: 'c'),
-            VideoPlayerApp(),
-            const MyHomePage(title: 'd'),
-          ],
-        )
-        // Scaffold(
-        //   body: Container(
-        //       color: Colors.black,
-        //       // // child: AnimatedWidgetSlider(contents: [
-        //       //   MyHomePage(title: 'initial'),
-        //       //   MyHomePage(title: 'Beta'),
-        //       //   MyHomePage(title: 'gamma'),
-        //       //   MyHomePage(title: 'lambda'),
-        //       // ]),
-        // child: AnimatedWidgetSlider.builder(
-        //   items: [
-        //     const MyHomePage(title: 'a'),
-        //     const MyHomePage(title: 'b'),
-        //     const MyHomePage(title: 'c'),
-        //     const MyHomePage(title: 'd'),
-        //   ],
-        // )),
-        // ),
-        ),
+      title: "ece",
+      home: StoryWidget(contents: diaps),
+      // Scaffold(
+      //   body: Container(
+      //       color: Colors.black,
+      //       // // child: AnimatedWidgetSlider(contents: [
+      //       //   MyHomePage(title: 'initial'),
+      //       //   MyHomePage(title: 'Beta'),
+      //       //   MyHomePage(title: 'gamma'),
+      //       //   MyHomePage(title: 'lambda'),
+      //       // ]),
+      // child: AnimatedWidgetSlider.builder(
+      //   items: [
+      //     const MyHomePage(title: 'a'),
+      //     const MyHomePage(title: 'b'),
+      //     const MyHomePage(title: 'c'),
+      //     const MyHomePage(title: 'd'),
+      //   ],
+      // )),
+      // ),
+    ),
   );
 }
 

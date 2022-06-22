@@ -1,32 +1,66 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_animated_widget_slide/widget_slider/animated_widget_slider.dart';
 import 'package:video_player/video_player.dart';
 
-void main() => runApp(const VideoPlayerApp());
+void main() => runApp(VideoPlayerApp());
 
 class VideoPlayerApp extends StatelessWidget {
-  const VideoPlayerApp({super.key});
+  late VideoPlayerScreen screen;
+  VideoPlayerApp({super.key}) {
+    screen = VideoPlayerScreen();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: 'Video Player Demo',
-      home: VideoPlayerScreen(),
+      home: screen,
     );
+  }
+
+  void setMethod(AnimatedWidgetSliderController? parentController) {
+    screen.setMethod(parentController);
   }
 }
 
 class VideoPlayerScreen extends StatefulWidget {
-  const VideoPlayerScreen({super.key});
+  _VideoPlayerScreenState? vpss;
+  VideoPlayerScreen({super.key}) {
+    // vpss = _VideoPlayerScreenState();
+  }
 
   @override
-  _VideoPlayerScreenState createState() => _VideoPlayerScreenState();
+  _VideoPlayerScreenState createState() {
+    vpss = _VideoPlayerScreenState();
+    return vpss!;
+  }
+
+  void setMethod(AnimatedWidgetSliderController? parentController) {
+    vpss?.setMethod(parentController);
+  }
 }
 
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   late VideoPlayerController _controller;
   late Future<void> _initializeVideoPlayerFuture;
+  AnimatedWidgetSliderController? parentController;
+
+  void setMethod(AnimatedWidgetSliderController? parentController) {
+    this.parentController = parentController;
+    assureNotAutoScroll();
+  }
+
+  Future<void> assureNotAutoScroll() async {
+    while (_controller.value.isPlaying) {
+      parentController?.pause();
+      await Future.delayed(Duration(milliseconds: 300));
+      print("object ${_controller.value.isPlaying}");
+    }
+    print("assure not auto scroll");
+    parentController?.play();
+  }
 
   @override
   void initState() {
@@ -90,10 +124,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
             // If the video is playing, pause it.
             if (_controller.value.isPlaying) {
               _controller.pause();
+              while (!_controller.value.isPlaying) {}
             } else {
               // If the video is paused, play it.
               _controller.play();
+              while (_controller.value.isPlaying) {}
             }
+            print("${_controller.value.isPlaying}");
+            assureNotAutoScroll();
           });
         },
         // Display the correct icon depending on the state of the player.

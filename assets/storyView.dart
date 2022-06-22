@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cube_transition_plus/cube_transition_plus.dart';
 
-class storyView extends StatelessWidget {
+class Diaporama extends StatelessWidget {
   final List<Widget>? contents;
 
-  const storyView({super.key, this.contents});
+  const Diaporama({super.key, this.contents});
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height * 0.8;

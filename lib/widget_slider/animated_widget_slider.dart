@@ -451,10 +451,10 @@ class Slide extends StatelessWidget {
   final AnimatedWidgetSliderController? parentController;
 
   Slide({super.key, this.widget, this.parentController}) {
-    // if (widget is VideoPlayerApp) {
-    //   print("$widget");
-    //   (widget as VideoPlayerApp).setMethod(parentController);
-    // }
+    if (widget != null && widget is VideoPlayerApp) {
+      // print("$widget");
+      (widget as VideoPlayerApp).setMethod(parentController);
+    }
   }
 
   @override
