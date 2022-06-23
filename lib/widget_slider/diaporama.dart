@@ -64,8 +64,6 @@ class DiaporamaState extends State<Diaporama> {
   @override
   void initState() {
     super.initState();
-    print(
-        "diaporama.DiaporamaState.initState..Widget>controller ::: ${widget.controller}");
     diaposContainer = Container();
     timerBar = TimerBar(number: widget.stories.length);
     diapo = DiaporamaShow.builder(

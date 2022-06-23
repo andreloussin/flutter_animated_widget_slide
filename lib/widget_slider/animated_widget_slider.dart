@@ -31,12 +31,10 @@ class AnimatedWidgetSlider extends StatefulWidget {
 
     if (contents!.isNotEmpty) {
       for (Widget item in contents!) {
-        if (item != null) {
-          li.add(Slide(
-            widget: item,
-            parentController: controller,
-          ));
-        }
+        li.add(Slide(
+          widget: item,
+          parentController: controller,
+        ));
       }
     }
     contents = li;
@@ -166,6 +164,7 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
           playDiapo();
         },
         onTapUp: (event) {
+          print("taped dx: ${event.globalPosition.dx < width / 2}");
           if (event.globalPosition.dx < width / 2) {
             prevDiapo();
           } else {
@@ -216,7 +215,7 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
                         child: child,
                       );
                     },
-                    child: _hidden,
+                    child: getHidden() ?? Container(),
                   ),
                   AnimatedBuilder(
                     animation: animController,
@@ -249,7 +248,7 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
                         child: child,
                       );
                     },
-                    child: _visible,
+                    child: getVisible() ?? Container(),
                   ),
                 ],
               ),
@@ -258,6 +257,20 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
         ),
       ),
     );
+  }
+
+  getVisible() {
+    print("_visible: $_visible");
+    print(
+        "%%%%%%%%%%%%%%%%%%%%% widget.contents!.indexOf(_visible): ${_visible != null ? widget.contents?.indexOf(_visible!) : _hidden}");
+    return _visible;
+  }
+
+  getHidden() {
+    print("_hidden: $_hidden");
+    print(
+        "%%%%%%%%%%%%%%%%%%%%% widget.contents!.indexOf(_hidden): ${_hidden != null ? widget.contents?.indexOf(_hidden!) : null}");
+    return _hidden;
   }
 
   void widthChanged() {
@@ -335,20 +348,14 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
 
   void pauseDiapo() {
     try {
-      ((widget.contents!.elementAt(index) as Slide).child() as Diaporama)
-          .pause();
-    } catch (e) {
-      print("$e");
-    }
+      (widget.contents!.elementAt(index) as Slide).pause();
+    } catch (e) {}
   }
 
   void playDiapo() {
     try {
-      ((widget.contents!.elementAt(index) as Slide).child() as Diaporama)
-          .play();
-    } catch (e) {
-      print("$e");
-    }
+      (widget.contents!.elementAt(index) as Slide).play();
+    } catch (e) {}
   }
 
   void prevDiapo() {
@@ -392,46 +399,44 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
   }
 
   void fromRight() {
-    print("index: $index && ${widget.contents!.length}");
-    if (index < widget.contents!.length && index >= 0) {
+    if (index < widget.contents!.length - 1 && index >= 0) {
       setState(() {
         // if (autoNexting) {
         //   _tempWaitSeconde = 2 * _waitSeconde;
         // }
-        print("fromRight__");
         animController.reset();
         index++;
-        print("wid: ${widget.contents!.elementAt(index)}");
-        Widget wid = widget.contents!.elementAt(index);
-        print("wid: $wid");
-        if (_actual != _hidden) {
-          _hidden = _visible;
-        }
-        _visible = wid;
+        // if (_actual != _hidden) {
+        //   _hidden = _visible;
+        // }
+        _visible = widget.contents!.elementAt(index);
+        print(
+            "widget.contents!.indexOf(_visible): ${widget.contents!.indexOf(_visible!)}");
+        print(
+            "##################: ${widget.contents!.elementAt(1) == widget.contents!.elementAt(2)}");
+
         _turnNormal = true;
-        _actual = _visible;
+        // _actual = _visible;
         animController.forward();
       });
     }
   }
 
   void fromLeft() {
-    print("index: $index && ${widget.contents!.length}");
-    if (index > 0 && index <= widget.contents!.length) {
+    if (index > 0 && index < widget.contents!.length) {
       setState(() {
         // if (autoNexting) {
         //   _tempWaitSeconde = 2 * _waitSeconde;
         // }
-        print("fromLeft");
         animController.reset();
         index--;
         Widget wid = widget.contents!.elementAt(index);
-        if (_actual != _visible) {
-          _visible = _hidden;
-        }
+        // if (_actual != _visible) {
+        //   _visible = _hidden;
+        // }
         _hidden = wid;
         _turnNormal = false;
-        _actual = _hidden;
+        // _actual = _hidden;
         animController.forward();
       });
     }
@@ -510,7 +515,6 @@ class Slide extends StatelessWidget {
 
   Slide({super.key, this.widget, this.parentController}) {
     if (widget != null && widget is VideoPlayerApp) {
-      // print("$widget");
       (widget as VideoPlayerApp).setMethod(parentController);
     }
   }
@@ -520,5 +524,13 @@ class Slide extends StatelessWidget {
     return Container(
       child: widget,
     );
+  }
+
+  void pause() {
+    (child() as Diaporama).pause();
+  }
+
+  void play() {
+    (child() as Diaporama).play();
   }
 }

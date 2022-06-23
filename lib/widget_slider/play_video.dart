@@ -26,8 +26,19 @@ class VideoPlayerApp extends StatelessWidget {
 }
 
 class VideoPlayerScreen extends StatefulWidget {
+  late VideoPlayerController? controller;
   _VideoPlayerScreenState? vpss;
-  VideoPlayerScreen({super.key}) {
+  late final String? link;
+  late final Function(int waitTime)? onInitialized;
+  VideoPlayerScreen(
+      {super.key,
+      this.link,
+      this.controller,
+      Function(int waitTime)? onInitialized}) {
+    this.onInitialized = onInitialized ??
+        (waitTime) {
+          print("onInitialized was free");
+        };
     // vpss = _VideoPlayerScreenState();
   }
 
@@ -43,9 +54,9 @@ class VideoPlayerScreen extends StatefulWidget {
 }
 
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
-  late VideoPlayerController _controller;
   late Future<void> _initializeVideoPlayerFuture;
   AnimatedWidgetSliderController? parentController;
+  bool lengthSent = false;
 
   void setMethod(AnimatedWidgetSliderController? parentController) {
     this.parentController = parentController;
@@ -53,13 +64,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   }
 
   Future<void> assureNotAutoScroll() async {
-    while (_controller.value.isPlaying) {
-      parentController?.pause();
-      await Future.delayed(Duration(milliseconds: 300));
-      print("object ${_controller.value.isPlaying}");
-    }
-    print("assure not auto scroll");
-    parentController?.play();
+    // while (_controller.value.isPlaying) {
+    //   parentController?.pause();
+    //   await Future.delayed(Duration(milliseconds: 300));
+    //   print("object ${_controller.value.isPlaying}");
+    // }
+    // print("assure not auto scroll");
+    // parentController?.play();
   }
 
   @override
@@ -69,76 +80,61 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     // Create and store the VideoPlayerController. The VideoPlayerController
     // offers several different constructors to play videos from assets, files,
     // or the internet.
-    _controller = VideoPlayerController.network(
-      'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
+    widget.controller = VideoPlayerController.network(
+      widget.link != null
+          ? widget.link!
+          : 'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
     );
-
-    // Initialize the controller and store the Future for later use.
-    _initializeVideoPlayerFuture = _controller.initialize();
-
-    // Use the controller to loop the video.
-    _controller.setLooping(true);
+    try {
+      _initializeVideoPlayerFuture = widget.controller!.initialize();
+      widget.controller?.play();
+    } catch (e) {}
   }
 
   @override
   void dispose() {
     // Ensure disposing of the VideoPlayerController to free up resources.
-    _controller.dispose();
-
+    widget.controller?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Butterfly Video'),
-      ),
-      // Use a FutureBuilder to display a loading spinner while waiting for the
-      // VideoPlayerController to finish initializing.
-      body: FutureBuilder(
-        future: _initializeVideoPlayerFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            // If the VideoPlayerController has finished initialization, use
-            // the data it provides to limit the aspect ratio of the video.
-            return AspectRatio(
-              aspectRatio: _controller.value.aspectRatio,
-              // Use the VideoPlayer widget to display the video.
-              child: VideoPlayer(_controller),
-            );
-          } else {
-            // If the VideoPlayerController is still initializing, show a
-            // loading spinner.
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Wrap the play or pause in a call to `setState`. This ensures the
-          // correct icon is shown.
-          setState(() {
-            // If the video is playing, pause it.
-            if (_controller.value.isPlaying) {
-              _controller.pause();
-              while (!_controller.value.isPlaying) {}
-            } else {
-              // If the video is paused, play it.
-              _controller.play();
-              while (_controller.value.isPlaying) {}
-            }
-            print("${_controller.value.isPlaying}");
-            assureNotAutoScroll();
-          });
-        },
-        // Display the correct icon depending on the state of the player.
-        child: Icon(
-          _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
-        ),
-      ),
+    return FutureBuilder(
+      future: _initializeVideoPlayerFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          widget.onInitialized!(2000);
+          // If the VideoPlayerController has finished initialization, use
+          // the data it provides to limit the aspect ratio of the video.
+          return AspectRatio(
+            aspectRatio: widget.controller!.value.aspectRatio,
+            // Use the VideoPlayer widget to display the video.
+            child: GestureDetector(
+              // When the child is tapped, show a snackbar.
+              onTap: () {
+                // if (_controller.value.isPlaying) {
+                //   _controller.pause();
+                //   while (!_controller.value.isPlaying) {}
+                // } else {
+                //   // If the video is paused, play it.
+                //   _controller.play();
+                //   while (_controller.value.isPlaying) {}
+                // }
+                print(
+                    "_controller.value.isPlaying: ${widget.controller!.value.isPlaying}");
+              },
+              child: VideoPlayer(widget.controller!),
+            ),
+          );
+        } else {
+          // If the VideoPlayerController is still initializing, show a
+          // loading spinner.
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
     );
   }
 }

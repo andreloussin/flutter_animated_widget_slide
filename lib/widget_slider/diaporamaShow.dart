@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animated_widget_slide/Slide/slide.dart';
+import 'package:flutter_animated_widget_slide/Slide/video_slide.dart';
 
 class DiaporamaShow extends StatefulWidget {
   List<Slide> slides;
@@ -34,9 +36,11 @@ class DiaporamaShow extends StatefulWidget {
       Slide Function(Widget child)? build}) {
     build = build ??
         (child) {
-          return Slide(
-            child: child,
-          );
+          return child is Slide
+              ? child
+              : Slide(
+                  child: child,
+                );
         };
     List<Slide> li = [];
     for (Widget i in items) {
@@ -60,6 +64,8 @@ class DiaporamaShowState extends State<DiaporamaShow> {
   int index = 0;
   double step = 0.0;
   bool autoNexting = true;
+  bool isAutoNextingNow = false;
+  bool exitAutoNextRequested = false;
   bool playing = false;
 
   DiaporamaShowState();
@@ -68,7 +74,7 @@ class DiaporamaShowState extends State<DiaporamaShow> {
   void initState() {
     super.initState();
     if (widget.startAutoScroll && widget.slides.isNotEmpty) {
-      autoNextIn(widget.slides.elementAt(index).waitTime);
+      autoNext();
     }
     widget.controller?.setParent(this);
   }
@@ -80,64 +86,94 @@ class DiaporamaShowState extends State<DiaporamaShow> {
     );
   }
 
-  int next() {
+  Future<int> next() async {
+    if (isAutoNextingNow) {
+      do {
+        exitAutoNextRequested = true;
+        print("waitting for isAutoNextingNow == false");
+        await Future.delayed(const Duration(milliseconds: 200));
+        print(
+            "after 200ms isAutoNextingNow == &isAutoNextingNow && exitAutoNextRequested == $exitAutoNextRequested");
+      } while (isAutoNextingNow);
+    }
     setState(() {
       step = 0;
       if (index + 1 >= widget.slides.length) {
-        stop();
+        // stop();
         try {
           widget.onDiapoEnd!();
         } catch (e) {}
       } else {
         index++;
+        if (autoNexting) {
+          autoNext();
+        }
       }
     });
-    if (autoNexting) {
-      autoNextIn(widget.slides.elementAt(index).waitTime);
-    }
     return index;
   }
 
-  int prev() {
+  Future<int> prev() async {
+    if (isAutoNextingNow) {
+      do {
+        exitAutoNextRequested = true;
+        print("waitting for isAutoNextingNow == false");
+        await Future.delayed(const Duration(milliseconds: 200));
+        print(
+            "after 200ms isAutoNextingNow == &isAutoNextingNow && exitAutoNextRequested == $exitAutoNextRequested");
+      } while (isAutoNextingNow);
+    }
     setState(() {
       step = 0;
       if (index - 1 < 0) {
-        stop();
+        // stop();
         try {
           widget.onDiapoPrev!();
         } catch (e) {}
       } else {
         index--;
+        if (autoNexting) {
+          autoNext();
+        }
       }
     });
-    if (autoNexting) {
-      autoNextIn(widget.slides.elementAt(index).waitTime);
-    }
+    print("index in prev $index");
     return index;
   }
 
-  void autoNextIn(int milliseconds) async {
-    if (milliseconds < 0) throw ("time must be positive");
+  void autoNext() async {
     play();
     step = 0;
     double passed = 0.0;
-    while (passed < milliseconds) {
+    isAutoNextingNow = true;
+    int milliseconds = widget.slides.elementAt(index).waitTime;
+    while (passed < milliseconds && !exitAutoNextRequested) {
+      milliseconds = widget.slides.elementAt(index).waitTime;
       await Future.delayed(const Duration(milliseconds: 100));
-      passed += playing ? 100 : 0;
+      passed +=
+          (playing && !widget.slides.elementAt(index).needPause) ? 100 : 0;
       if (passed >= milliseconds) {
         passed = milliseconds + 0.0;
       }
       step = passed / milliseconds;
       widget.stepListener!(index, step);
     }
+    exitAutoNextRequested = false;
+    isAutoNextingNow = false;
     next();
   }
 
   void pause() {
+    if (widget.slides.elementAt(index) is VideoSlide) {
+      (widget.slides.elementAt(index) as VideoSlide).pause();
+    }
     playing = false;
   }
 
   void play() {
+    if (widget.slides.elementAt(index) is VideoSlide) {
+      (widget.slides.elementAt(index) as VideoSlide).play();
+    }
     playing = true;
   }
 
@@ -148,24 +184,8 @@ class DiaporamaShowState extends State<DiaporamaShow> {
   void start() {
     autoNexting = true;
     if (widget.slides.isNotEmpty) {
-      autoNextIn(widget.slides.elementAt(index).waitTime);
+      autoNext();
     }
-  }
-}
-
-class Slide extends StatelessWidget {
-  final Widget? child;
-  int waitTime = 2000;
-
-  Slide({Key? key, int waitTime = 2000, this.child}) : super(key: key) {
-    this.waitTime = (500 <= waitTime && waitTime <= 10000)
-        ? waitTime
-        : throw ("waitTime = $waitTime is not in [500,100]");
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(child: Center(child: Container(child: child)));
   }
 }
 
@@ -184,8 +204,8 @@ class DiaporamaShowController {
     parent!.prev();
   }
 
-  void autoNextIn(int milliseconds) {
-    parent!.autoNextIn(milliseconds);
+  void autoNext() {
+    parent!.autoNext();
   }
 
   void pause() {

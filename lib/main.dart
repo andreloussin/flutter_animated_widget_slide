@@ -2,11 +2,16 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_animated_widget_slide/Slide/video_slide.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/animated_widget_slider.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/p_story.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/play_video.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/diaporama.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/story.dart';
+
+class A {}
+
+class B extends A {}
 
 void main() {
   List<Diaporama> diaps = [
@@ -33,29 +38,32 @@ void main() {
     Diaporama(
       stories: const [
         MyHomePage(title: 'a'),
-        Text("AAAAA"),
+        // Text("AAAAA"),
         MyHomePage(title: 'ab'),
       ],
     ),
     Diaporama(
-      stories: const [
-        Text("AAAAA"),
+      stories: [
+        VideoSlide(
+            link:
+                "https://vod-progressive.akamaized.net/exp=1656017238~acl=%2Fvimeo-prod-skyfire-std-us%2F01%2F401%2F15%2F377005507%2F1574148898.mp4~hmac=16b9b220bcb02aaa69f441384e8de53d604c1d132f4b396273a9aff7b622a11c/vimeo-prod-skyfire-std-us/01/401/15/377005507/1574148898.mp4?download=1&filename=video.mp4"),
+        // Text("AAAAA"),
         MyHomePage(title: 'b'),
       ],
     ),
-    Diaporama(
-      stories: const [
-        MyHomePage(title: 'a'),
-        Text("AAAAA"),
-        MyHomePage(title: 'ab'),
-      ],
-    ),
-    Diaporama(
-      stories: const [
-        Text("AAAAA"),
-        MyHomePage(title: 'b'),
-      ],
-    ),
+    // Diaporama(
+    //   stories: const [
+    //     MyHomePage(title: 'a'),
+    //     Text("AAAAA"),
+    //     MyHomePage(title: 'ab'),
+    //   ],
+    // ),
+    // Diaporama(
+    //   stories: const [
+    //     Text("AAAAA"),
+    //     MyHomePage(title: 'b'),
+    //   ],
+    // ),
     // Diaporama(
     //   stories: const [
     //     MyHomePage(title: 'b'),

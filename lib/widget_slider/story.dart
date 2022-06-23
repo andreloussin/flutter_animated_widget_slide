@@ -31,29 +31,19 @@ class StoryWidgetState extends State<StoryWidget> {
           item as Diaporama;
           if (index == 0) {
             item.setOnDiapoEnd(() {
-              print("diapo end");
               controller.next();
             });
-            item.setOnDiapoPrev(() {
-              print("diapo prev with dispose");
-              dispose();
-            });
+            item.setOnDiapoPrev(() {});
           } else if (index == widget.contents.length - 1) {
-            item.setOnDiapoEnd(() {
-              print("diapo prev with dispose");
-              dispose();
-            });
+            item.setOnDiapoEnd(() {});
             item.setOnDiapoPrev(() {
-              print("diapo prev");
               controller.prev();
             });
           } else {
             item.setOnDiapoEnd(() {
-              print("diapo end");
               controller.next();
             });
             item.setOnDiapoPrev(() {
-              print("diapo prev");
               controller.prev();
             });
           }
@@ -68,8 +58,11 @@ class StoryWidgetState extends State<StoryWidget> {
     // ignore: avoid_print
     print('Dispose used');
     super.dispose();
-    widget.onDispose!();
+    // widget.onDispose!();
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => VideoPlayerScreen()));
+        context,
+        MaterialPageRoute(
+            builder: (context) => Slide(widget: VideoPlayerScreen())));
+    print('Dispose end');
   }
 }
