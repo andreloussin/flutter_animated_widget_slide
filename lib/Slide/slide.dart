@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 class Slide extends StatelessWidget {
   Widget? child;
-  int waitTime = 2000;
+  int waitTime = 5000;
   bool read = false;
   bool needPause = false;
 
   Slide(
       {Key? key,
-      int waitTime = 2000,
+      int waitTime = 5000,
       this.child,
       this.read = false,
       this.needPause = false})

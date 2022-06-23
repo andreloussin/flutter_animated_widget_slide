@@ -398,48 +398,96 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
         : lastScaleAnim.value;
   }
 
-  void fromRight() {
-    if (index < widget.contents!.length - 1 && index >= 0) {
-      setState(() {
-        // if (autoNexting) {
-        //   _tempWaitSeconde = 2 * _waitSeconde;
-        // }
-        animController.reset();
-        index++;
-        // if (_actual != _hidden) {
-        //   _hidden = _visible;
-        // }
-        _visible = widget.contents!.elementAt(index);
-        print(
-            "widget.contents!.indexOf(_visible): ${widget.contents!.indexOf(_visible!)}");
-        print(
-            "##################: ${widget.contents!.elementAt(1) == widget.contents!.elementAt(2)}");
+  // void fromRight() {
+  //   if (index < widget.contents!.length - 1 && index >= 0) {
+  //     setState(() {
+  //       // if (autoNexting) {
+  //       //   _tempWaitSeconde = 2 * _waitSeconde;
+  //       // }
+  //       animController.reset();
+  //       index++;
+  //       if (_actual != _hidden) {
+  //         _hidden = _visible;
+  //       }
+  //       _visible = widget.contents!.elementAt(index);
+  //       print(
+  //           "widget.contents!.indexOf(_visible): ${widget.contents!.indexOf(_visible!)}");
+  //       print(
+  //           "##################: ${widget.contents!.elementAt(1) == widget.contents!.elementAt(2)}");
 
-        _turnNormal = true;
-        // _actual = _visible;
-        animController.forward();
-      });
-    }
+  //       _turnNormal = true;
+  //       _actual = _visible;
+  //       animController.forward();
+  //     });
+  //   }
+  // }
+
+  // void fromLeft() {
+  //   if (index > 0 && index < widget.contents!.length) {
+  //     setState(() {
+  //       // if (autoNexting) {
+  //       //   _tempWaitSeconde = 2 * _waitSeconde;
+  //       // }
+  //       animController.reset();
+  //       index--;
+  //       Widget wid = widget.contents!.elementAt(index);
+  //       // if (_actual != _visible) {
+  //       //   _visible = _hidden;
+  //       // }
+  //       _hidden = wid;
+  //       _turnNormal = false;
+  //       // _actual = _hidden;
+  //       animController.forward();
+  //     });
+  //   }
+  // }
+
+  void fromRight({Widget? widget}) {
+    setState(() {
+      animController.reset();
+      if (widget == null) {
+        index++;
+        try {
+          widget = this
+              .widget
+              .contents!
+              .elementAt(index % this.widget.contents!.length);
+        } catch (e) {
+          widget = Container();
+        }
+      }
+      if (_actual != _hidden) {
+        _hidden = _visible;
+      }
+      _visible = widget;
+      _turnNormal = true;
+      _actual = _visible;
+      animController.forward();
+    });
   }
 
-  void fromLeft() {
-    if (index > 0 && index < widget.contents!.length) {
-      setState(() {
-        // if (autoNexting) {
-        //   _tempWaitSeconde = 2 * _waitSeconde;
-        // }
-        animController.reset();
+  void fromLeft({Widget? widget}) {
+    setState(() {
+      animController.reset();
+      if (widget == null) {
         index--;
-        Widget wid = widget.contents!.elementAt(index);
-        // if (_actual != _visible) {
-        //   _visible = _hidden;
-        // }
-        _hidden = wid;
-        _turnNormal = false;
-        // _actual = _hidden;
-        animController.forward();
-      });
-    }
+        try {
+          widget = this
+              .widget
+              .contents!
+              .elementAt(index % this.widget.contents!.length);
+        } catch (e) {
+          widget = Container();
+        }
+      }
+      if (_actual != _visible) {
+        _visible = _hidden;
+      }
+      _hidden = widget;
+      _turnNormal = false;
+      _actual = _hidden;
+      animController.forward();
+    });
   }
 
   @override

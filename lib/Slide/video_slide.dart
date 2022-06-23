@@ -12,6 +12,7 @@ class VideoSlide extends Slide {
     child = VideoPlayerScreen(
       link: link,
       onInitialized: (waitTime) {
+        print("new wait time === $waitTime");
         needPause = false;
         this.waitTime = waitTime;
       },
