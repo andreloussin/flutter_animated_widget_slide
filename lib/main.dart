@@ -25,16 +25,16 @@ void main() {
     //     MyHomePage(title: 'b'),
     //   ],
     // ),
-    // Diaporama(
-    //   stories: const [
-    //     //VideoPlayerApp(),
-    //     Text("AAAAA"),
-    //     MyHomePage(title: 'a'),
-    //     Text("AAAAA"),
-    //     MyHomePage(title: 'a'),
-    //     MyHomePage(title: 'b'),
-    //   ],
-    // ),
+    Diaporama(
+      stories: const [
+        //VideoPlayerApp(),
+        Text("AAAAA"),
+        MyHomePage(title: 'a'),
+        Text("AAAAA"),
+        MyHomePage(title: 'a'),
+        MyHomePage(title: 'b'),
+      ],
+    ),
     Diaporama(
       stories: const [
         MyHomePage(title: 'a'),
@@ -73,6 +73,11 @@ void main() {
   runApp(
     MaterialApp(
       title: "ece",
+      // home: Container(
+      //     padding: EdgeInsets.only(right: 200),
+      //     color: Colors.red,
+      //     width: 500,
+      //     child: Container(color: Colors.black)),
       home: StoryWidget(
         contents: diaps,
         onDispose: () {

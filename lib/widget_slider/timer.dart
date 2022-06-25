@@ -115,11 +115,10 @@ class TimerState extends State<Timer> {
         child: SizedBox.expand(
             child: Container(
                 key: _widgetKey,
+                padding: EdgeInsets.only(right: width - ww),
                 color: Colors.blue[50],
-                child: Center(
-                    child: Container(
+                child: Container(
                   color: Colors.blue,
-                  width: ww,
-                )))));
+                ))));
   }
 }

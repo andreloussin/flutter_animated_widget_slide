@@ -138,4 +138,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       },
     );
   }
+
+  void listenVideoStreaming() async {
+    while (widget.controller!.value.isBuffering) {
+      if (widget.controller!.value.isInitialized) ;
+    }
+    while (widget.controller!.value.isInitialized);
+  }
 }
