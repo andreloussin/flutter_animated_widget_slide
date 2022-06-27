@@ -3,123 +3,125 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animated_widget_slide/Slide/video_slide.dart';
+import 'package:flutter_animated_widget_slide/stream_video/stream_video_component.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/animated_widget_slider.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/p_story.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/play_video.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/diaporama.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/story.dart';
 
-class A {}
-
-class B extends A {}
-
 void main() {
-  List<Diaporama> diaps = [
-    // Diaporama(
-    //   stories: const [
-    //     //VideoPlayerApp(),
-    //     Text("AAAAA"),
-    //     MyHomePage(title: 'a'),
-    //     Text("AAAAA"),
-    //     MyHomePage(title: 'a'),
-    //     MyHomePage(title: 'b'),
-    //   ],
-    // ),
-    Diaporama(
-      stories: const [
-        //VideoPlayerApp(),
-        Text("AAAAA"),
-        MyHomePage(title: 'a'),
-        Text("AAAAA"),
-        MyHomePage(title: 'a'),
-        MyHomePage(title: 'b'),
-      ],
-    ),
-    Diaporama(
-      stories: const [
-        MyHomePage(title: 'a'),
-        // Text("AAAAA"),
-        MyHomePage(title: 'ab'),
-      ],
-    ),
-    Diaporama(
-      stories: [
-        VideoSlide(),
-        // Text("AAAAA"),
-        MyHomePage(title: 'b'),
-      ],
-    ),
-    // Diaporama(
-    //   stories: const [
-    //     MyHomePage(title: 'a'),
-    //     Text("AAAAA"),
-    //     MyHomePage(title: 'ab'),
-    //   ],
-    // ),
-    // Diaporama(
-    //   stories: const [
-    //     Text("AAAAA"),
-    //     MyHomePage(title: 'b'),
-    //   ],
-    // ),
-    // Diaporama(
-    //   stories: const [
-    //     MyHomePage(title: 'b'),
-    //     Text("AAAAA"),
-    //     MyHomePage(title: 'a'),
-    //   ],
-    // ),
-  ];
-  runApp(
-    MaterialApp(
-      title: "ece",
-      // home: Container(
-      //     padding: EdgeInsets.only(right: 200),
-      //     color: Colors.red,
-      //     width: 500,
-      //     child: Container(color: Colors.black)),
-      home: StoryWidget(
-        contents: diaps,
-        onDispose: () {
-          print("need to exit ${Platform.isLinux}");
-          if (Platform.isAndroid) {
-            SystemNavigator.pop();
-          } else if (Platform.isIOS) {
-            exit(0);
-          } else {
-            return 0;
-          }
-        },
-      ),
-      // home: AnimatedWidgetSlider(contents: const [
-      //   //VideoPlayerApp(),
-      //   Text("AAAAA"),
-      //   MyHomePage(title: 'a'),
-      //   Text("AAAAA"),
-      //   MyHomePage(title: 'a'),
-      //   MyHomePage(title: 'b'),
-      // ]),
-      // Scaffold(
-      //   body: Container(
-      //       color: Colors.black,
-      //       // // child: AnimatedWidgetSlider(contents: [
-      //       //   MyHomePage(title: 'initial'),
-      //       //   MyHomePage(title: 'Beta'),
-      //       //   MyHomePage(title: 'gamma'),
-      //       //   MyHomePage(title: 'lambda'),
-      //       // ]),
-      // child: AnimatedWidgetSlider.builder(
-      //   items: [
-      //     const MyHomePage(title: 'a'),
-      //     const MyHomePage(title: 'b'),
-      //     const MyHomePage(title: 'c'),
-      //     const MyHomePage(title: 'd'),
-      //   ],
-      // )),
-      // ),
-    ),
-  );
+  runApp(StreamVideoPlayer());
 }
+
+// void main() {
+//   List<Diaporama> diaps = [
+//     // Diaporama(
+//     //   stories: const [
+//     //     //VideoPlayerApp(),
+//     //     Text("AAAAA"),
+//     //     MyHomePage(title: 'a'),
+//     //     Text("AAAAA"),
+//     //     MyHomePage(title: 'a'),
+//     //     MyHomePage(title: 'b'),
+//     //   ],
+//     // ),
+//     Diaporama(
+//       stories: const [
+//         //VideoPlayerApp(),
+//         Text("AAAAA"),
+//         MyHomePage(title: 'a'),
+//         Text("AAAAA"),
+//         MyHomePage(title: 'a'),
+//         MyHomePage(title: 'b'),
+//       ],
+//     ),
+//     Diaporama(
+//       stories: const [
+//         MyHomePage(title: 'a'),
+//         // Text("AAAAA"),
+//         MyHomePage(title: 'ab'),
+//       ],
+//     ),
+//     Diaporama(
+//       stories: [
+//         VideoSlide(),
+//         // Text("AAAAA"),
+//         MyHomePage(title: 'b'),
+//       ],
+//     ),
+//     // Diaporama(
+//     //   stories: const [
+//     //     MyHomePage(title: 'a'),
+//     //     Text("AAAAA"),
+//     //     MyHomePage(title: 'ab'),
+//     //   ],
+//     // ),
+//     // Diaporama(
+//     //   stories: const [
+//     //     Text("AAAAA"),
+//     //     MyHomePage(title: 'b'),
+//     //   ],
+//     // ),
+//     // Diaporama(
+//     //   stories: const [
+//     //     MyHomePage(title: 'b'),
+//     //     Text("AAAAA"),
+//     //     MyHomePage(title: 'a'),
+//     //   ],
+//     // ),
+//   ];
+//   runApp(
+//     MaterialApp(
+//       title: "ece",
+//       // home: Container(
+//       //     padding: EdgeInsets.only(right: 200),
+//       //     color: Colors.red,
+//       //     width: 500,
+//       //     child: Container(color: Colors.black)),
+//       home: VideoSlide(),
+//       // home: StoryWidget(
+//       //   contents: diaps,
+//       //   onDispose: () {
+//       //     print("need to exit ${Platform.isLinux}");
+//       //     if (Platform.isAndroid) {
+//       //       SystemNavigator.pop();
+//       //     } else if (Platform.isIOS) {
+//       //       exit(0);
+//       //     } else {
+//       //       return 0;
+//       //     }
+//       //   },
+//       // ),
+//       // home: AnimatedWidgetSlider(contents: const [
+//       //   //VideoPlayerApp(),
+//       //   Text("AAAAA"),
+//       //   MyHomePage(title: 'a'),
+//       //   Text("AAAAA"),
+//       //   MyHomePage(title: 'a'),
+//       //   MyHomePage(title: 'b'),
+//       // ]),
+//       // Scaffold(
+//       //   body: Container(
+//       //       color: Colors.black,
+//       //       // // child: AnimatedWidgetSlider(contents: [
+//       //       //   MyHomePage(title: 'initial'),
+//       //       //   MyHomePage(title: 'Beta'),
+//       //       //   MyHomePage(title: 'gamma'),
+//       //       //   MyHomePage(title: 'lambda'),
+//       //       // ]),
+//       // child: AnimatedWidgetSlider.builder(
+//       //   items: [
+//       //     const MyHomePage(title: 'a'),
+//       //     const MyHomePage(title: 'b'),
+//       //     const MyHomePage(title: 'c'),
+//       //     const MyHomePage(title: 'd'),
+//       //   ],
+//       // )),
+//       // ),
+//     ),
+//   );
+// }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);

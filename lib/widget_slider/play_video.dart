@@ -35,10 +35,7 @@ class VideoPlayerScreen extends StatefulWidget {
       this.link,
       this.controller,
       Function(int waitTime)? onInitialized}) {
-    this.onInitialized = onInitialized ??
-        (waitTime) {
-          print("onInitialized was free");
-        };
+    this.onInitialized = onInitialized ?? (waitTime) {};
     // vpss = _VideoPlayerScreenState();
   }
 
@@ -111,22 +108,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
           return AspectRatio(
             aspectRatio: widget.controller!.value.aspectRatio,
             // Use the VideoPlayer widget to display the video.
-            child: GestureDetector(
-              // When the child is tapped, show a snackbar.
-              onTap: () {
-                // if (_controller.value.isPlaying) {
-                //   _controller.pause();
-                //   while (!_controller.value.isPlaying) {}
-                // } else {
-                //   // If the video is paused, play it.
-                //   _controller.play();
-                //   while (_controller.value.isPlaying) {}
-                // }
-                print(
-                    "_controller.value.isPlaying: ${widget.controller!.value.isPlaying}");
-              },
-              child: VideoPlayer(widget.controller!),
-            ),
+            child: VideoPlayer(widget.controller!),
           );
         } else {
           // If the VideoPlayerController is still initializing, show a
