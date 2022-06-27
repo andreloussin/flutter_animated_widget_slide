@@ -178,6 +178,11 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
             fromRight();
           }
         },
+        onVerticalDragEnd: (detail) {
+          if (detail.velocity.pixelsPerSecond.dy > 0) {
+            dispose();
+          }
+        },
         child: SizedBox.expand(
           child: Container(
             key: widgetKey,
