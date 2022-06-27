@@ -11,122 +11,117 @@ import 'package:flutter_animated_widget_slide/widget_slider/play_video.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/diaporama.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/story.dart';
 
-void main() {
-  runApp(MaterialApp(
-      home: Scaffold(
-          appBar: AppBar(title: Text("diamond ring")),
-          body: TextSlide(
-              "this is some text with @tag and link @blur www.facebook.com or https://freebasics.com"))));
-}
-
 // void main() {
-//   List<Diaporama> diaps = [
-//     // Diaporama(
-//     //   stories: const [
-//     //     //VideoPlayerApp(),
-//     //     Text("AAAAA"),
-//     //     MyHomePage(title: 'a'),
-//     //     Text("AAAAA"),
-//     //     MyHomePage(title: 'a'),
-//     //     MyHomePage(title: 'b'),
-//     //   ],
-//     // ),
-//     Diaporama(
-//       stories: const [
-//         //VideoPlayerApp(),
-//         Text("AAAAA"),
-//         MyHomePage(title: 'a'),
-//         Text("AAAAA"),
-//         MyHomePage(title: 'a'),
-//         MyHomePage(title: 'b'),
-//       ],
-//     ),
-//     Diaporama(
-//       stories: const [
-//         MyHomePage(title: 'a'),
-//         // Text("AAAAA"),
-//         MyHomePage(title: 'ab'),
-//       ],
-//     ),
-//     Diaporama(
-//       stories: [
-//         VideoSlide(),
-//         // Text("AAAAA"),
-//         MyHomePage(title: 'b'),
-//       ],
-//     ),
-//     // Diaporama(
-//     //   stories: const [
-//     //     MyHomePage(title: 'a'),
-//     //     Text("AAAAA"),
-//     //     MyHomePage(title: 'ab'),
-//     //   ],
-//     // ),
-//     // Diaporama(
-//     //   stories: const [
-//     //     Text("AAAAA"),
-//     //     MyHomePage(title: 'b'),
-//     //   ],
-//     // ),
-//     // Diaporama(
-//     //   stories: const [
-//     //     MyHomePage(title: 'b'),
-//     //     Text("AAAAA"),
-//     //     MyHomePage(title: 'a'),
-//     //   ],
-//     // ),
-//   ];
-//   runApp(
-//     MaterialApp(
-//       title: "ece",
-//       // home: Container(
-//       //     padding: EdgeInsets.only(right: 200),
-//       //     color: Colors.red,
-//       //     width: 500,
-//       //     child: Container(color: Colors.black)),
-//       home: VideoSlide(),
-//       // home: StoryWidget(
-//       //   contents: diaps,
-//       //   onDispose: () {
-//       //     print("need to exit ${Platform.isLinux}");
-//       //     if (Platform.isAndroid) {
-//       //       SystemNavigator.pop();
-//       //     } else if (Platform.isIOS) {
-//       //       exit(0);
-//       //     } else {
-//       //       return 0;
-//       //     }
-//       //   },
-//       // ),
-//       // home: AnimatedWidgetSlider(contents: const [
-//       //   //VideoPlayerApp(),
-//       //   Text("AAAAA"),
-//       //   MyHomePage(title: 'a'),
-//       //   Text("AAAAA"),
-//       //   MyHomePage(title: 'a'),
-//       //   MyHomePage(title: 'b'),
-//       // ]),
-//       // Scaffold(
-//       //   body: Container(
-//       //       color: Colors.black,
-//       //       // // child: AnimatedWidgetSlider(contents: [
-//       //       //   MyHomePage(title: 'initial'),
-//       //       //   MyHomePage(title: 'Beta'),
-//       //       //   MyHomePage(title: 'gamma'),
-//       //       //   MyHomePage(title: 'lambda'),
-//       //       // ]),
-//       // child: AnimatedWidgetSlider.builder(
-//       //   items: [
-//       //     const MyHomePage(title: 'a'),
-//       //     const MyHomePage(title: 'b'),
-//       //     const MyHomePage(title: 'c'),
-//       //     const MyHomePage(title: 'd'),
-//       //   ],
-//       // )),
-//       // ),
-//     ),
-//   );
+//   runApp(MaterialApp(
+//       home: Scaffold(
+//           appBar: AppBar(title: Text("diamond ring")),
+//           body: TextSlide(
+//               "this is some text with @tag and link @blur www.facebook.com or https://freebasics.com"))));
 // }
+
+void main() {
+  List<Diaporama> diaps = [
+    // Diaporama(
+    //   stories: const [
+    //     //VideoPlayerApp(),
+    //     Text("AAAAA"),
+    //     MyHomePage(title: 'a'),
+    //     Text("AAAAA"),
+    //     MyHomePage(title: 'a'),
+    //     MyHomePage(title: 'b'),
+    //   ],
+    // ),
+    Diaporama(
+      stories: const [
+        //VideoPlayerApp(),
+        Text("AAAAA"),
+        MyHomePage(title: 'a'),
+        Text("AAAAA"),
+        MyHomePage(title: 'a'),
+        MyHomePage(title: 'b'),
+      ],
+    ),
+    Diaporama(
+      stories: const [
+        MyHomePage(title: 'a'),
+        // Text("AAAAA"),
+        MyHomePage(title: 'ab'),
+      ],
+    ),
+    Diaporama(
+      stories: const [
+        MyHomePage(title: 'a'),
+        // Text("AAAAA"),
+        MyHomePage(title: 'ab'),
+      ],
+    ),
+    // Diaporama(
+    //   stories: [
+    //     VideoSlide(),
+    //     // Text("AAAAA"),
+    //     MyHomePage(title: 'b'),
+    //   ],
+    // ),
+    // Diaporama(
+    //   stories: const [
+    //     MyHomePage(title: 'a'),
+    //     Text("AAAAA"),
+    //     MyHomePage(title: 'ab'),
+    //   ],
+    // ),
+    // Diaporama(
+    //   stories: const [
+    //     Text("AAAAA"),
+    //     MyHomePage(title: 'b'),
+    //   ],
+    // ),
+    // Diaporama(
+    //   stories: const [
+    //     MyHomePage(title: 'b'),
+    //     Text("AAAAA"),
+    //     MyHomePage(title: 'a'),
+    //   ],
+    // ),
+  ];
+  runApp(
+    MaterialApp(
+      title: "ece",
+      // home: Container(
+      //     padding: EdgeInsets.only(right: 200),
+      //     color: Colors.red,
+      //     width: 500,
+      //     child: Container(color: Colors.black)),
+      // home: VideoSlide(),
+      home: StoryWidget(contents: diaps),
+      // home: AnimatedWidgetSlider(contents: const [
+      //   //VideoPlayerApp(),
+      //   Text("AAAAA"),
+      //   MyHomePage(title: 'a'),
+      //   Text("AAAAA"),
+      //   MyHomePage(title: 'a'),
+      //   MyHomePage(title: 'b'),
+      // ]),
+      // Scaffold(
+      //   body: Container(
+      //       color: Colors.black,
+      //       // // child: AnimatedWidgetSlider(contents: [
+      //       //   MyHomePage(title: 'initial'),
+      //       //   MyHomePage(title: 'Beta'),
+      //       //   MyHomePage(title: 'gamma'),
+      //       //   MyHomePage(title: 'lambda'),
+      //       // ]),
+      // child: AnimatedWidgetSlider.builder(
+      //   items: [
+      //     const MyHomePage(title: 'a'),
+      //     const MyHomePage(title: 'b'),
+      //     const MyHomePage(title: 'c'),
+      //     const MyHomePage(title: 'd'),
+      //   ],
+      // )),
+      // ),
+    ),
+  );
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);

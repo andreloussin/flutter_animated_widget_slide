@@ -7,11 +7,15 @@ class Diaporama extends StatefulWidget {
   final List<Widget> stories;
   DiaporamaShowController? controller;
   DiaporamaState st = DiaporamaState();
+  Function()? onDiapoEnd;
+  Function()? onDiapoPrev;
 
   Diaporama(
       {super.key,
       this.stories = const [],
-      DiaporamaShowController? controller}) {
+      DiaporamaShowController? controller,
+      this.onDiapoEnd,
+      this.onDiapoPrev}) {
     this.controller = controller ?? DiaporamaShowController();
   }
   @override
@@ -44,20 +48,28 @@ class DiaporamaState extends State<Diaporama> {
   final GlobalKey _widgetKey = GlobalKey();
   Size size = const Size(0, 0);
   bool initialized = false;
-  void Function()? onDiapoEnd;
-  void Function()? onDiapoPrev;
 
   void setOnDiapoEnd(void Function() onDiapoEnd) {
-    this.onDiapoEnd = onDiapoEnd;
     if (initialized) {
-      diapo.onDiapoEnd = this.onDiapoEnd;
+      widget.onDiapoEnd = onDiapoEnd;
+      diapo.onDiapoEnd = widget.onDiapoEnd;
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((data) {
+        widget.onDiapoEnd = onDiapoEnd;
+        diapo.onDiapoEnd = widget.onDiapoEnd;
+      });
     }
   }
 
   void setOnDiapoPrev(void Function() onDiapoPrev) {
-    this.onDiapoPrev = onDiapoPrev;
     if (initialized) {
-      diapo.onDiapoPrev = this.onDiapoPrev;
+      widget.onDiapoPrev = onDiapoPrev;
+      diapo.onDiapoPrev = widget.onDiapoPrev;
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((data) {
+        widget.onDiapoPrev = onDiapoPrev;
+        diapo.onDiapoPrev = widget.onDiapoPrev;
+      });
     }
   }
 
@@ -81,8 +93,8 @@ class DiaporamaState extends State<Diaporama> {
         );
       });
 
-      diapo.onDiapoEnd = onDiapoEnd;
-      diapo.onDiapoPrev = onDiapoPrev;
+      diapo.onDiapoEnd = widget.onDiapoEnd;
+      diapo.onDiapoPrev = widget.onDiapoPrev;
     });
     initialized = true;
   }
@@ -109,18 +121,3 @@ class DiaporamaState extends State<Diaporama> {
         ));
   }
 }
-
-// class DiaporamaController {
-//   DiaporamaState? parent;
-//   setParent(DiaporamaState? parent) {
-//     this.parent = parent;
-//   }
-
-//   void setOnDiapoEnd(void Function() onDiapoEnd) {
-//     parent!.setOnDiapoEnd(onDiapoEnd);
-//   }
-
-//   void setOnDiapoPrev(void Function() onDiapoPrev) {
-//     parent!.setOnDiapoEnd(onDiapoPrev);
-//   }
-// }

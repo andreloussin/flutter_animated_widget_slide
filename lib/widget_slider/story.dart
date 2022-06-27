@@ -33,9 +33,7 @@ class StoryWidgetState extends State<StoryWidget> {
             item.setOnDiapoEnd(() {
               controller.next();
             });
-            item.setOnDiapoPrev(() {});
           } else if (index == widget.contents.length - 1) {
-            item.setOnDiapoEnd(() {});
             item.setOnDiapoPrev(() {
               controller.prev();
             });
@@ -47,7 +45,6 @@ class StoryWidgetState extends State<StoryWidget> {
               controller.prev();
             });
           }
-
           return item;
         });
   }
@@ -55,14 +52,12 @@ class StoryWidgetState extends State<StoryWidget> {
   @override
   void dispose() {
     controller.dispose();
-    // ignore: avoid_print
     print('Dispose used');
     super.dispose();
-    // widget.onDispose!();
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => Slide(widget: VideoPlayerScreen())));
+            builder: (context) => SliderPage(widget: VideoPlayerScreen())));
     print('Dispose end');
   }
 }

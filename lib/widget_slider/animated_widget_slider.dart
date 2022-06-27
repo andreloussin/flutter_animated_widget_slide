@@ -31,10 +31,12 @@ class AnimatedWidgetSlider extends StatefulWidget {
 
     if (contents!.isNotEmpty) {
       for (Widget item in contents!) {
-        li.add(Slide(
-          widget: item,
-          parentController: controller,
-        ));
+        li.add(item is SliderPage
+            ? item
+            : SliderPage(
+                widget: item,
+                parentController: controller,
+              ));
       }
     }
     contents = li;
@@ -144,7 +146,8 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
     );
 
     // Set showing widget
-    _hidden = widget.contents?.elementAt(index % widget.contents!.length);
+    index = (0 % widget.contents!.length);
+    _hidden = widget.contents?.elementAt(index);
     _actual = _hidden;
 
     WidgetsBinding.instance.addPostFrameCallback((data) {
@@ -196,7 +199,9 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
                       return Transform(
                         alignment: Alignment.center,
                         transform: _turnNormal
-                            ? (Matrix4.identity()
+                            ?
+                            // Front to Left
+                            (Matrix4.identity()
                               ..setEntry(3, 2, 0.001)
                               ..rotateY(rotateAnim.value)
                               ..scale(scale_value())
@@ -206,7 +211,9 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
                                       ? 10000
                                       : 0,
                                   -(width * math.sin(rotateAnim.value))))
-                            : (Matrix4.identity()
+                            :
+                            // Front to Right
+                            (Matrix4.identity()
                               ..setEntry(3, 2, 0.001)
                               ..rotateY(-rotateAnim.value)
                               ..scale(scale_value())
@@ -220,7 +227,7 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
                         child: child,
                       );
                     },
-                    child: getHidden() ?? Container(),
+                    child: _hidden ?? Container(),
                   ),
                   AnimatedBuilder(
                     animation: animController,
@@ -228,7 +235,9 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
                       return Transform(
                         alignment: Alignment.center,
                         transform: _turnNormal
-                            ? (Matrix4.identity()
+                            ?
+                            // Right to Front
+                            (Matrix4.identity()
                               ..setEntry(3, 2, 0.001)
                               ..rotateY(rotateAnim.value - math.pi / 2)
                               ..scale(scale_value())
@@ -239,7 +248,9 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
                                   -width +
                                       (width *
                                           (1 - math.cos(rotateAnim.value)))))
-                            : (Matrix4.identity()
+                            :
+                            // Front to Right
+                            (Matrix4.identity()
                               ..setEntry(3, 2, 0.001)
                               ..rotateY(math.pi / 2 - rotateAnim.value)
                               ..scale(scale_value())
@@ -253,7 +264,7 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
                         child: child,
                       );
                     },
-                    child: getVisible() ?? Container(),
+                    child: _visible ?? Container(),
                   ),
                 ],
               ),
@@ -262,20 +273,6 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
         ),
       ),
     );
-  }
-
-  getVisible() {
-    print("_visible: $_visible");
-    print(
-        "%%%%%%%%%%%%%%%%%%%%% widget.contents!.indexOf(_visible): ${_visible != null ? widget.contents?.indexOf(_visible!) : _hidden}");
-    return _visible;
-  }
-
-  getHidden() {
-    print("_hidden: $_hidden");
-    print(
-        "%%%%%%%%%%%%%%%%%%%%% widget.contents!.indexOf(_hidden): ${_hidden != null ? widget.contents?.indexOf(_hidden!) : null}");
-    return _hidden;
   }
 
   void widthChanged() {
@@ -353,19 +350,19 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
 
   void pauseDiapo() {
     try {
-      (widget.contents!.elementAt(index) as Slide).pause();
+      (widget.contents!.elementAt(index) as SliderPage).pause();
     } catch (e) {}
   }
 
   void playDiapo() {
     try {
-      (widget.contents!.elementAt(index) as Slide).play();
+      (widget.contents!.elementAt(index) as SliderPage).play();
     } catch (e) {}
   }
 
   void prevDiapo() {
     try {
-      ((widget.contents!.elementAt(index) as Slide).child() as Diaporama)
+      ((widget.contents!.elementAt(index) as SliderPage).child() as Diaporama)
           .controller!
           .prev();
     } catch (e) {
@@ -375,7 +372,7 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
 
   void nextDiapo() {
     try {
-      ((widget.contents!.elementAt(index) as Slide).child() as Diaporama)
+      ((widget.contents!.elementAt(index) as SliderPage).child() as Diaporama)
           .controller!
           .next();
     } catch (e) {
@@ -447,63 +444,43 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
   //   }
   // }
 
-  void fromRight({Widget? widget}) {
-    setState(() {
-      animController.reset();
-      if (widget == null) {
-        index++;
-        try {
-          widget = this
-              .widget
-              .contents!
-              .elementAt(index % this.widget.contents!.length);
-        } catch (e) {
-          widget = Container();
-        }
-      }
-      if (_actual != _hidden) {
-        _hidden = _visible;
-      }
-      _visible = widget;
-      _turnNormal = true;
-      _actual = _visible;
-      animController.forward();
-    });
+  void fromRight() {
+    index = (index + 1) % widget.contents!.length;
+    _turnNormal = true;
+    anim();
   }
 
-  void fromLeft({Widget? widget}) {
+  void fromLeft() {
+    index = (index - 1) % widget.contents!.length;
+    _turnNormal = false;
+    anim();
+  }
+
+  void anim() {
     setState(() {
+      late Widget wid;
+      try {
+        wid = widget.contents!.elementAt(index);
+      } catch (e) {
+        wid = Container();
+      }
+      _hidden = _actual;
+      _visible = wid;
+      _actual = _visible;
       animController.reset();
-      if (widget == null) {
-        index--;
-        try {
-          widget = this
-              .widget
-              .contents!
-              .elementAt(index % this.widget.contents!.length);
-        } catch (e) {
-          widget = Container();
-        }
-      }
-      if (_actual != _visible) {
-        _visible = _hidden;
-      }
-      _hidden = widget;
-      _turnNormal = false;
-      _actual = _hidden;
       animController.forward();
     });
   }
 
   @override
   void dispose() {
-    super.dispose();
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => const MyHomePage(
-                  title: "home",
-                )));
+    // super.dispose();
+    // Navigator.push(
+    //     context,
+    //     MaterialPageRoute(
+    //         builder: (context) => const MyHomePage(
+    //               title: "home",
+    //             )));
   }
 }
 
@@ -558,7 +535,7 @@ class AnimatedWidgetSliderController {
   }
 }
 
-class Slide extends StatelessWidget {
+class SliderPage extends StatelessWidget {
   final Widget? widget;
   final AnimatedWidgetSliderController? parentController;
 
@@ -566,7 +543,7 @@ class Slide extends StatelessWidget {
     return widget;
   }
 
-  Slide({super.key, this.widget, this.parentController}) {
+  SliderPage({super.key, this.widget, this.parentController}) {
     if (widget != null && widget is VideoPlayerApp) {
       (widget as VideoPlayerApp).setMethod(parentController);
     }
