@@ -33,7 +33,7 @@ class StoryWidgetState extends State<StoryWidget> {
             item.setOnDiapoEnd(() {
               controller.next();
             });
-          } else if (index == widget.contents.length - 1) {
+          } else if (index + 1 == widget.contents.length) {
             item.setOnDiapoPrev(() {
               controller.prev();
             });

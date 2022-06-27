@@ -7,15 +7,12 @@ class Diaporama extends StatefulWidget {
   final List<Widget> stories;
   DiaporamaShowController? controller;
   DiaporamaState st = DiaporamaState();
-  Function()? onDiapoEnd;
-  Function()? onDiapoPrev;
 
-  Diaporama(
-      {super.key,
-      this.stories = const [],
-      DiaporamaShowController? controller,
-      this.onDiapoEnd,
-      this.onDiapoPrev}) {
+  Diaporama({
+    super.key,
+    this.stories = const [],
+    DiaporamaShowController? controller,
+  }) {
     this.controller = controller ?? DiaporamaShowController();
   }
   @override
@@ -48,28 +45,31 @@ class DiaporamaState extends State<Diaporama> {
   final GlobalKey _widgetKey = GlobalKey();
   Size size = const Size(0, 0);
   bool initialized = false;
+  List<Function()> onInstanciatedCallback = [];
 
   void setOnDiapoEnd(void Function() onDiapoEnd) {
-    if (initialized) {
-      widget.onDiapoEnd = onDiapoEnd;
-      diapo.onDiapoEnd = widget.onDiapoEnd;
-    } else {
-      WidgetsBinding.instance.addPostFrameCallback((data) {
-        widget.onDiapoEnd = onDiapoEnd;
-        diapo.onDiapoEnd = widget.onDiapoEnd;
+    {
+      onInstanciatedCallback.add(() {
+        diapo.onDiapoEnd = onDiapoEnd;
       });
     }
   }
 
   void setOnDiapoPrev(void Function() onDiapoPrev) {
-    if (initialized) {
-      widget.onDiapoPrev = onDiapoPrev;
-      diapo.onDiapoPrev = widget.onDiapoPrev;
-    } else {
-      WidgetsBinding.instance.addPostFrameCallback((data) {
-        widget.onDiapoPrev = onDiapoPrev;
-        diapo.onDiapoPrev = widget.onDiapoPrev;
+    {
+      onInstanciatedCallback.add(() {
+        diapo.onDiapoEnd = onDiapoPrev;
       });
+    }
+  }
+
+  void runCallbacks() async {
+    for (Function() callback in onInstanciatedCallback) {
+      try {
+        callback();
+      } catch (e) {
+        print("error when runnin this callback: $callback");
+      }
     }
   }
 
@@ -85,6 +85,7 @@ class DiaporamaState extends State<Diaporama> {
         stepListener: timerBar.setStep);
     WidgetsBinding.instance.addPostFrameCallback((data) {
       size = (_widgetKey.currentContext?.findRenderObject() as RenderBox).size;
+      runCallbacks();
       setState(() {
         diaposContainer = SizedBox(
           width: size.width,
@@ -92,9 +93,7 @@ class DiaporamaState extends State<Diaporama> {
           child: diapo,
         );
       });
-
-      diapo.onDiapoEnd = widget.onDiapoEnd;
-      diapo.onDiapoPrev = widget.onDiapoPrev;
+      runCallbacks();
     });
     initialized = true;
   }
