@@ -10,6 +10,7 @@ class VideoSlide extends Slide {
     needPause = true;
     waitTime = 10000;
     child = VideoPlayerScreen(
+      listener: (data) => needPause = data,
       link: link,
       onInitialized: (waitTime) {
         print("new wait time === $waitTime");

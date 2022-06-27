@@ -466,21 +466,10 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
       }
       _hidden = _actual;
       _visible = wid;
-      _actual = _visible;
-      animController.reset();
+      _actual = wid;
+      if (animController.isCompleted) animController.reset();
       animController.forward();
     });
-  }
-
-  @override
-  void dispose() {
-    // super.dispose();
-    // Navigator.push(
-    //     context,
-    //     MaterialPageRoute(
-    //         builder: (context) => const MyHomePage(
-    //               title: "home",
-    //             )));
   }
 }
 

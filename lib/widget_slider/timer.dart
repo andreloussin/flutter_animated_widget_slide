@@ -60,7 +60,7 @@ class TimerBarState extends State<TimerBar> {
   Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.centerLeft,
-      height: 5,
+      height: 3,
       child: Row(children: _timers),
     );
   }

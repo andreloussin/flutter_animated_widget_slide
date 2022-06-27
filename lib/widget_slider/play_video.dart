@@ -30,11 +30,14 @@ class VideoPlayerScreen extends StatefulWidget {
   _VideoPlayerScreenState? vpss;
   late final String? link;
   late final Function(int waitTime)? onInitialized;
+  Function(bool data)? listener;
   VideoPlayerScreen(
       {super.key,
       this.link,
       this.controller,
-      Function(int waitTime)? onInitialized}) {
+      Function(int waitTime)? onInitialized,
+      Function(bool data)? listener}) {
+    this.listener = listener ?? (data) {};
     this.onInitialized = onInitialized ?? (waitTime) {};
     // vpss = _VideoPlayerScreenState();
   }
@@ -57,26 +60,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   void setMethod(AnimatedWidgetSliderController? parentController) {
     this.parentController = parentController;
-    assureNotAutoScroll();
-  }
-
-  Future<void> assureNotAutoScroll() async {
-    // while (_controller.value.isPlaying) {
-    //   parentController?.pause();
-    //   await Future.delayed(Duration(milliseconds: 300));
-    //   print("object ${_controller.value.isPlaying}");
-    // }
-    // print("assure not auto scroll");
-    // parentController?.play();
+    // assureNotAutoScroll();
   }
 
   @override
   void initState() {
     super.initState();
-
-    // Create and store the VideoPlayerController. The VideoPlayerController
-    // offers several different constructors to play videos from assets, files,
-    // or the internet.
     widget.controller = VideoPlayerController.network(
       widget.link != null
           ? widget.link!
@@ -84,13 +73,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     );
     try {
       _initializeVideoPlayerFuture = widget.controller!.initialize();
+      widget.controller!.addListener(() {
+        setState(() {
+          widget.listener!(widget.controller!.value.isBuffering);
+        });
+      });
       widget.controller?.play();
     } catch (e) {}
   }
 
   @override
   void dispose() {
-    // Ensure disposing of the VideoPlayerController to free up resources.
     widget.controller?.dispose();
     super.dispose();
   }
@@ -101,30 +94,29 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       future: _initializeVideoPlayerFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          widget
-              .onInitialized!(widget.controller!.value.duration.inMilliseconds);
-          // If the VideoPlayerController has finished initialization, use
-          // the data it provides to limit the aspect ratio of the video.
-          return AspectRatio(
-            aspectRatio: widget.controller!.value.aspectRatio,
-            // Use the VideoPlayer widget to display the video.
-            child: VideoPlayer(widget.controller!),
+          if (!lengthSent) {
+            widget.onInitialized!(
+                widget.controller!.value.duration.inMilliseconds);
+            lengthSent = true;
+          }
+          return Stack(
+            alignment: Alignment.center,
+            children: [
+              AspectRatio(
+                aspectRatio: widget.controller!.value.aspectRatio,
+                child: VideoPlayer(widget.controller!),
+              ),
+              Visibility(
+                  visible: widget.controller!.value.isBuffering,
+                  child: const CircularProgressIndicator())
+            ],
           );
         } else {
-          // If the VideoPlayerController is still initializing, show a
-          // loading spinner.
           return const Center(
             child: CircularProgressIndicator(),
           );
         }
       },
     );
-  }
-
-  void listenVideoStreaming() async {
-    while (widget.controller!.value.isBuffering) {
-      if (widget.controller!.value.isInitialized) ;
-    }
-    while (widget.controller!.value.isInitialized);
   }
 }

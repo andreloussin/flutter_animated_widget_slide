@@ -11,13 +11,15 @@ import 'package:flutter_animated_widget_slide/widget_slider/play_video.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/diaporama.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/story.dart';
 
-// void main() {
-//   runApp(MaterialApp(
-//       home: Scaffold(
-//           appBar: AppBar(title: Text("diamond ring")),
-//           body: TextSlide(
-//               "this is some text with @tag and link @blur www.facebook.com or https://freebasics.com"))));
-// }
+void mainr() {
+  runApp(MaterialApp(
+      home: Scaffold(
+    appBar: AppBar(title: Text("diamond ring")),
+    body: StreamVideoPlayer(link: ""),
+    // body: TextSlide(
+    //     "this is some text with @tag and link @blur www.facebook.com or https://freebasics.com"))
+  )));
+}
 
 void main() {
   List<Diaporama> diaps = [
@@ -32,8 +34,9 @@ void main() {
     //   ],
     // ),
     Diaporama(
-      stories: const [
-        //VideoPlayerApp(),
+      stories: [
+        VideoSlide(),
+        StreamVideoPlayer(),
         Text("AAAAA"),
         MyHomePage(title: 'a'),
         Text("AAAAA"),
@@ -51,24 +54,26 @@ void main() {
     Diaporama(
       stories: const [
         MyHomePage(title: 'a'),
-        // Text("AAAAA"),
+        Text("AAAAA"),
         MyHomePage(title: 'ab'),
       ],
     ),
-    // Diaporama(
-    //   stories: [
-    //     VideoSlide(),
-    //     // Text("AAAAA"),
-    //     MyHomePage(title: 'b'),
-    //   ],
-    // ),
-    // Diaporama(
-    //   stories: const [
-    //     MyHomePage(title: 'a'),
-    //     Text("AAAAA"),
-    //     MyHomePage(title: 'ab'),
-    //   ],
-    // ),
+    Diaporama(
+      stories: [
+        VideoSlide(),
+        StreamVideoPlayer(),
+        TextSlide(
+            "this is some text with @tag and link @blur www.facebook.com or https://freebasics.com"),
+        MyHomePage(title: 'b'),
+      ],
+    ),
+    Diaporama(
+      stories: const [
+        MyHomePage(title: 'a'),
+        Text("AAAAA"),
+        MyHomePage(title: 'ab'),
+      ],
+    ),
     // Diaporama(
     //   stories: const [
     //     Text("AAAAA"),

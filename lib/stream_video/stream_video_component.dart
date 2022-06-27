@@ -58,6 +58,9 @@ class _StreamVideoPlayerState extends State<StreamVideoPlayer> {
       _initializeVideoPlayerFuture = controller.initialize();
       controller.play();
       controller.setLooping(true);
+      controller.addListener(() {
+        setState(() {});
+      });
     } catch (e) {
       print("$e");
     }
@@ -72,7 +75,8 @@ class _StreamVideoPlayerState extends State<StreamVideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
+    return Center(
+        child: FutureBuilder(
       future: _initializeVideoPlayerFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
@@ -96,6 +100,6 @@ class _StreamVideoPlayerState extends State<StreamVideoPlayer> {
           );
         }
       },
-    );
+    ));
   }
 }

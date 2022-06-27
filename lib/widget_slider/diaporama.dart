@@ -58,7 +58,7 @@ class DiaporamaState extends State<Diaporama> {
   void setOnDiapoPrev(void Function() onDiapoPrev) {
     {
       onInstanciatedCallback.add(() {
-        diapo.onDiapoEnd = onDiapoPrev;
+        diapo.onDiapoPrev = onDiapoPrev;
       });
     }
   }
