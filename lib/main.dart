@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_animated_widget_slide/Slide/text_slide.dart';
 import 'package:flutter_animated_widget_slide/Slide/video_slide.dart';
 import 'package:flutter_animated_widget_slide/stream_video/stream_video_component.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/animated_widget_slider.dart';
@@ -11,7 +12,11 @@ import 'package:flutter_animated_widget_slide/widget_slider/diaporama.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/story.dart';
 
 void main() {
-  runApp(StreamVideoPlayer());
+  runApp(MaterialApp(
+      home: Scaffold(
+          appBar: AppBar(title: Text("diamond ring")),
+          body: TextSlide(
+              "this is some text with @tag and link @blur www.facebook.com or https://freebasics.com"))));
 }
 
 // void main() {
