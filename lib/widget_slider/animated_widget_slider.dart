@@ -1,7 +1,7 @@
+// ignore_for_file: must_be_immutable, no_logic_in_create_state, empty_catches
+
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
-import 'dart:io';
-import 'package:flutter_animated_widget_slide/main.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/diaporama.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/play_video.dart';
 
@@ -108,7 +108,7 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
   AnimatedWidgetSliderState(
       {this.scrollListener, this.controller, this.startAutoScroll = false}) {
     controller?.setParent(this);
-    scrollListener = scrollListener ?? (value, index) {};
+    scrollListener = scrollListener ?? (value, index) => Container();
   }
 
   @override
@@ -167,7 +167,7 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
           playDiapo();
         },
         onTapUp: (event) {
-          print("taped dx: ${event.globalPosition.dx < width / 2}");
+          // print("taped dx: ${event.globalPosition.dx < width / 2}");
           if (event.globalPosition.dx < width / 2) {
             prevDiapo();
           } else {
@@ -204,7 +204,7 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
                             (Matrix4.identity()
                               ..setEntry(3, 2, 0.001)
                               ..rotateY(rotateAnim.value)
-                              ..scale(scale_value())
+                              ..scale(scaleValue())
                               ..translate(
                                   -(width * (1 - math.cos(rotateAnim.value))),
                                   rotateAnim.value > math.pi / 2 - math.pi / 12
@@ -216,7 +216,7 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
                             (Matrix4.identity()
                               ..setEntry(3, 2, 0.001)
                               ..rotateY(-rotateAnim.value)
-                              ..scale(scale_value())
+                              ..scale(scaleValue())
                               ..translate(
                                 (width * (1 - math.cos(rotateAnim.value))),
                                 rotateAnim.value > math.pi / 2 - math.pi / 12
@@ -240,7 +240,7 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
                             (Matrix4.identity()
                               ..setEntry(3, 2, 0.001)
                               ..rotateY(rotateAnim.value - math.pi / 2)
-                              ..scale(scale_value())
+                              ..scale(scaleValue())
                               ..translate(
                                   width -
                                       (width * (math.sin(rotateAnim.value))),
@@ -249,11 +249,11 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
                                       (width *
                                           (1 - math.cos(rotateAnim.value)))))
                             :
-                            // Front to Right
+                            // Right to Front
                             (Matrix4.identity()
                               ..setEntry(3, 2, 0.001)
                               ..rotateY(math.pi / 2 - rotateAnim.value)
-                              ..scale(scale_value())
+                              ..scale(scaleValue())
                               ..translate(
                                 (-width +
                                     (width * (math.sin(rotateAnim.value)))),
@@ -308,7 +308,7 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
     );
   }
 
-  void set tempWaitSeconde(int second) {
+  set tempWaitSeconde(int second) {
     _tempWaitSeconde = second;
   }
 
@@ -340,7 +340,7 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
       scrollListener!(
           step /
               (10 * (_tempWaitSeconde > 0 ? _tempWaitSeconde : _waitSeconde)),
-          index % this.widget.contents!.length);
+          index % widget.contents!.length);
     }
   }
 
@@ -365,9 +365,7 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
       ((widget.contents!.elementAt(index) as SliderPage).child() as Diaporama)
           .controller!
           .prev();
-    } catch (e) {
-      print("$e");
-    }
+    } catch (e) {}
   }
 
   void nextDiapo() {
@@ -375,9 +373,7 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
       ((widget.contents!.elementAt(index) as SliderPage).child() as Diaporama)
           .controller!
           .next();
-    } catch (e) {
-      print("$e");
-    }
+    } catch (e) {}
   }
 
   void pause() {
@@ -388,13 +384,13 @@ class AnimatedWidgetSliderState extends State<AnimatedWidgetSlider>
     _isPlaying = true;
   }
 
-  double scale_value() {
+  double scaleValue() {
     return rotateAnim.value < math.pi / 4
         ? firstScaleAnim.value
         : lastScaleAnim.value;
   }
 
-  double rotate_degree() {
+  double rotateDegree() {
     return rotateAnim.value < math.pi / 4
         ? firstScaleAnim.value
         : lastScaleAnim.value;

@@ -10,6 +10,7 @@ import 'package:flutter_animated_widget_slide/widget_slider/p_story.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/play_video.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/diaporama.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/story.dart';
+import 'package:flutter_animated_widget_slide/widget_slider/w_story_cubic_animated.dart';
 
 void mainr() {
   runApp(MaterialApp(
@@ -22,21 +23,44 @@ void mainr() {
 }
 
 void main() {
+  List<Widget> ws = const [
+    Text("AAAAA"),
+    Text("BBBBB"),
+    Text("CCCCC"),
+    Text("DDDDD"),
+    Text("EEEEE"),
+  ];
+  int index = 0;
+  StoryCubicAnimatedController ctrl = StoryCubicAnimatedController();
+  runApp(
+    MaterialApp(
+      home: Scaffold(
+        body: StoryCubicAnimated(
+          initial: ws[index],
+          controller: ctrl,
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            index = (index + 1) % ws.length;
+            ctrl.next(ws[index]);
+            print("Next");
+          },
+          tooltip: 'next',
+          child: const Icon(Icons.next_plan),
+        ),
+      ),
+    ),
+  );
+}
+
+void mainww() {
   List<Diaporama> diaps = [
-    // Diaporama(
-    //   stories: const [
-    //     //VideoPlayerApp(),
-    //     Text("AAAAA"),
-    //     MyHomePage(title: 'a'),
-    //     Text("AAAAA"),
-    //     MyHomePage(title: 'a'),
-    //     MyHomePage(title: 'b'),
-    //   ],
-    // ),
     Diaporama(
       stories: [
         VideoSlide(),
-        StreamVideoPlayer(),
+        TextSlide(
+            "this is some text with @tag and link @blur www.facebook.com or https://freebasics.com"),
+        // StreamVideoPlayer(),
         Text("AAAAA"),
         MyHomePage(title: 'a'),
         Text("AAAAA"),
@@ -74,56 +98,12 @@ void main() {
         MyHomePage(title: 'ab'),
       ],
     ),
-    // Diaporama(
-    //   stories: const [
-    //     Text("AAAAA"),
-    //     MyHomePage(title: 'b'),
-    //   ],
-    // ),
-    // Diaporama(
-    //   stories: const [
-    //     MyHomePage(title: 'b'),
-    //     Text("AAAAA"),
-    //     MyHomePage(title: 'a'),
-    //   ],
-    // ),
   ];
   runApp(
-    MaterialApp(
+    const MaterialApp(
       title: "ece",
-      // home: Container(
-      //     padding: EdgeInsets.only(right: 200),
-      //     color: Colors.red,
-      //     width: 500,
-      //     child: Container(color: Colors.black)),
-      // home: VideoSlide(),
-      home: StoryWidget(contents: diaps),
-      // home: AnimatedWidgetSlider(contents: const [
-      //   //VideoPlayerApp(),
-      //   Text("AAAAA"),
-      //   MyHomePage(title: 'a'),
-      //   Text("AAAAA"),
-      //   MyHomePage(title: 'a'),
-      //   MyHomePage(title: 'b'),
-      // ]),
-      // Scaffold(
-      //   body: Container(
-      //       color: Colors.black,
-      //       // // child: AnimatedWidgetSlider(contents: [
-      //       //   MyHomePage(title: 'initial'),
-      //       //   MyHomePage(title: 'Beta'),
-      //       //   MyHomePage(title: 'gamma'),
-      //       //   MyHomePage(title: 'lambda'),
-      //       // ]),
-      // child: AnimatedWidgetSlider.builder(
-      //   items: [
-      //     const MyHomePage(title: 'a'),
-      //     const MyHomePage(title: 'b'),
-      //     const MyHomePage(title: 'c'),
-      //     const MyHomePage(title: 'd'),
-      //   ],
-      // )),
-      // ),
+      // home: StoryWidget(contents: diaps),
+      home: Bibi(),
     ),
   );
 }
@@ -131,21 +111,11 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primarySwatch: Colors.blue,
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
@@ -208,7 +178,15 @@ class Bibi extends StatefulWidget {
 }
 
 class _BibiState extends State<Bibi> {
-  final AnimatedWidgetSlider _w = AnimatedWidgetSlider();
+  final AnimatedWidgetSlider _w = AnimatedWidgetSlider(
+    contents: const [
+      MyHomePage(title: 'a'),
+      MyHomePage(title: 'b'),
+      MyHomePage(title: 'c'),
+      MyHomePage(title: 'd'),
+      MyHomePage(title: 'e'),
+    ],
+  );
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -217,8 +195,8 @@ class _BibiState extends State<Bibi> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           _w,
-          ElevatedButton(onPressed: () {}, child: const Text("Left")),
-          ElevatedButton(onPressed: () {}, child: const Text("Right")),
+          // ElevatedButton(onPressed: () {}, child: const Text("Left")),
+          // ElevatedButton(onPressed: () {}, child: const Text("Right")),
         ],
       ),
     );
