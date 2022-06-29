@@ -94,7 +94,10 @@ class TextSlide extends Slide {
     late TextSpan span;
     switch (type) {
       case 0:
-        span = TextSpan(text: text);
+        span = TextSpan(
+          style: const TextStyle(color: Colors.black),
+          text: text,
+        );
         break;
       case 1:
         span = TextSpan(

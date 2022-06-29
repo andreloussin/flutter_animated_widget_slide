@@ -12,17 +12,16 @@ import 'package:flutter_animated_widget_slide/widget_slider/diaporama.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/story.dart';
 import 'package:flutter_animated_widget_slide/widget_slider/w_story_cubic_animated.dart';
 
-void mainr() {
+void main() {
   runApp(MaterialApp(
       home: Scaffold(
-    appBar: AppBar(title: Text("diamond ring")),
-    body: StreamVideoPlayer(link: ""),
-    // body: TextSlide(
-    //     "this is some text with @tag and link @blur www.facebook.com or https://freebasics.com"))
-  )));
+          appBar: AppBar(title: Text("diamond ring")),
+          // body: StreamVideoPlayer(link: ""),
+          body: TextSlide(
+              "this is some text with @tag and link @blur www.facebook.com or https://freebasics.com"))));
 }
 
-void main() {
+void maine() {
   List<Widget> ws = const [
     Text("AAAAA"),
     Text("BBBBB"),
@@ -41,12 +40,12 @@ void main() {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            index = (index + 1) % ws.length;
-            ctrl.next(ws[index]);
-            print("Next");
+            index = (index - 1) % ws.length;
+            ctrl.prev(ws[index]);
+            print("Prev");
           },
-          tooltip: 'next',
-          child: const Icon(Icons.next_plan),
+          tooltip: 'Prev',
+          child: const Icon(Icons.skip_previous_outlined),
         ),
       ),
     ),
